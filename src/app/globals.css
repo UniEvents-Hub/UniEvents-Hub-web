@@ -25,9 +25,11 @@ body {
 
 /* LogIn Layout Container STYLES */
 
-.loginLayout-background-container { 
+.loginLayout-background-container {
+  position: relative;
   width: 100vw;
-  height: 100vh; 
+  height: 100vh;
+  overflow: hidden;
 }
 
 .loginLayout-content {

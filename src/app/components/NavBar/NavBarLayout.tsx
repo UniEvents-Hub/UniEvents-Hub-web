@@ -10,7 +10,7 @@ export default function NavBarLayout({ pageTitle, children }: any) {
     return (
         <>
             <div>
-                <MenuBarMobile setter={setShowSidebar} />
+                {/* <MenuBarMobile setter={setShowSidebar} /> */}
                 <Sidebar show={showSidebar} setter={setShowSidebar} />
             </div>
         </>
