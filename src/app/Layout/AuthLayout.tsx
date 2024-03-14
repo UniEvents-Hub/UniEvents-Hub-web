@@ -12,6 +12,7 @@ export default function AuthLayout({
     children: React.ReactNode;
 }) {
     const [user, setUser] = useState(null);
+    const [isSignup, setIsSignup] = useState(true);
 
     useEffect(() => { }, []);
 
@@ -19,7 +20,7 @@ export default function AuthLayout({
     useEffect(() => {
     }, []);
 
-    if ((user)) return <>{children}</>;
+    if ((!user)) return <>{children}</>;
     else
         return (
             <div className="flex flex-col">
@@ -30,7 +31,7 @@ export default function AuthLayout({
                         src="/images/Ctribe-logo.svg"
                         alt="c-tribe"
                     />
-                    {!user ? <SignUp /> : <Login />}
+                    {isSignup ? <SignUp /> : <Login />}
                 </div>
             </div>
         );

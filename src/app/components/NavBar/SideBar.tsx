@@ -2,9 +2,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useAppSelector } from "@/app/redux/store";
 import React, { useEffect, useRef, useState } from "react";
 import Loader from "../Loader";
 import Image from "next/image";
+import { getIntialials } from '@/app/utils/utility-function';
+import * as _ from 'lodash';
 
 type MenuItem = {
     name: string;
@@ -23,7 +27,12 @@ const initialMenu: MenuItem[] = [
         icon: "/images/navbar/dashboard.svg",
         selectedIcon: "/images/navbar/dashboard_selected.svg"
     },
-    { name: "Schedule", href: "/schedule", icon: "/images/navbar/schedule.svg", selectedIcon: "/images/navbar/schedule_selected.svg" },
+    { name: "Tickets", href: "/tickets", icon: "/images/navbar/schedule.svg", selectedIcon: "/images/navbar/schedule_selected.svg" },
+    { name: "Favourites", href: "/favourites", icon: "/images/navbar/coming_soon.svg", selectedIcon: "/images/navbar/schedule_selected.svg" },
+    { name: "My Gallery", href: "/gallery", icon: "/images/navbar/speaker.svg", selectedIcon: "/images/navbar/speaker_selected.svg" },
+    { name: "Rewards", href: "/favourites", icon: "/images/navbar/lineup.svg", selectedIcon: "/images/navbar/lineup_selected.svg" },
+    { name: "Profile Settings", href: "/profile", icon: "/images/navbar/settings.svg", selectedIcon: "/images/navbar/settings_selected.svg" },
+    { name: "Log Out", href: "/", icon: "/images/navbar/logout.svg", selectedIcon: "/images/navbar/schedule_selected.svg" },
 ];
 
 
@@ -38,15 +47,23 @@ export default function NewNavbar({ show, setter }: any) {
     const router = useRouter();
     const upcomingChildRef = useRef<any>(null);
 
-    const authValue = null
-    const Loading = false
-    const userData = null
+    const authValue = useAppSelector((state) => state.appReducer.auth);
+    const Loading = useAppSelector((state) => state.appReducer.Loading);
+    const userData = useAppSelector((state) => state.appReducer.userData);
     const [upcomingHeight, setUpcomingHeight] = useState(0)
-
+    const [backgroundGradiant, setBackgroundGradient] = useState<string>("tech-gradient-background");
+    const [selectedPathName, setSelectedPathName] = useState('')
+    const pathname = usePathname();
     // Define our base class
-    const className = "bg-black w-[250px] transition-[margin-left] ease-in-out duration-500 fixed md:static top-0 bottom-0 left-0 z-40";
+    const containerClassName = "bg-black w-[200px] transition-[margin-left] ease-in-out duration-500 top-0 bottom-0 left-0 z-40";
     // Append class based on state of sidebar visiblity
     const appendClass = show ? " ml-0" : " ml-[-250px] md:ml-0";
+
+    useEffect(() => {
+        if (pathname) {
+            setSelectedPathName(pathname)
+        }
+    }, [pathname]);
 
     useEffect(() => {
         // comment 
@@ -80,75 +97,87 @@ export default function NewNavbar({ show, setter }: any) {
 
     return (
         <>
-            {Loading && <Loader message={"Loading..."} />}
+            {Loading.isLoading && <Loader message={Loading.message} />}
 
-            {authValue?.isAuth && userData?.tags && (
+            {!authValue.isAuth && (
                 <div
                     id="default-sidebar"
-                    className={`${className}${appendClass} fixed`}
+                    className={`${containerClassName}${appendClass} ${backgroundGradiant} default-sideBar fixed`}
                     aria-label="Sidebar"
                 >
+                    <div className="h-screen bg-white bg-opacity-40">
 
-                    <div className="h-full pt-[27px] pl-[20px] flex-col items-center justify-center bg-white">
-                        <div className="flex justify-between items-center">
-                            <img
-                                className="h-[34px] w-[80px] mt-0"
-                                src="/images/C-Tribe_Main_Logo.svg"
-                                alt="c-tribe"
-                            />
+                        <div className={`h-full pt-[0px] pl-[0px] flex-col flex bg-white bg-opacity-30`}>
 
-                            <div className="flex items-center pointer-events-none">
-                                <img
-                                    className="h-[20px] w-[20px] mt-0"
-                                    src="/images/search_icon.svg"
+                            <div className="flex justify-between items-center">
+                                <Image
+                                    height={18}
+                                    width={230}
+                                    className="mt-0"
+                                    src="/images/u-logo.png"
                                     alt="c-tribe"
                                 />
-                                <div
-                                    className={`flex-none items-center`}
-                                >
-                                    <button
-                                        // onClick={() => setIsNotiShow(true)}
-                                        data-modal-target="default-modal"
-                                        data-modal-toggle="default-modal"
-                                        className="py-4 px-4 relative border-2 border-transparent text-gray-800 rounded-full hover:text-gray-400 focus:outline-none focus:text-gray-500 transition duration-150 ease-in-out"
-                                        aria-label="Notification"
+                            </div>
+
+                            <div className="pl-[20px] pt-4 ">
+                                {initialMenu.map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className={`cursor-pointer flex justify-start items-center pt-2`}
+                                        onClick={() => handleInitialMenuItemClick(index)}
                                     >
-                                        <img
-                                            className="h-[20px] w-[20px] mt-0"
-                                            src="/images/notification_icon.svg"
-                                            alt="c-tribe"
-                                        />
-                                    </button>
+                                        <div className="flex items-center justify-start mt-6">
+                                            <Image
+                                                src={selectedPathName === item.href ? item.selectedIcon : item.icon}
+                                                width={20}
+                                                height={20}
+                                                alt="sideBar"
+                                                style={{ objectFit: "contain" }}
+                                                quality={75}
+                                            />
+                                            <span className={`ml-[12px] text-[14px] ${selectedPathName === item.href ? 'font-bold text-black' : 'font-normal text-[#909090]'}`}>{item.name}</span>
+
+
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <hr className="mr-4 mt-8 h-5.5 border-t-0 bg-[#C4C4C4]" />
+
+
+
+
+                            <div className="flex flex-col cursor-pointer md:pb-10 md:mt-auto mt-[60px] pl-[20px]"
+                                onClick={() => {
+                                    setter((oldVal: any) => !oldVal);
+                                    router.push(profileItem.href)
+                                }}>
+                                <div
+                                    className={`flex items-center justify-start`}>
+
+                                    <div className="h-[45px] w-[45px] rounded-[10px] ml-[-6px] bg-black flex justify-center items-center">
+
+                                        {/* <img
+                  className="w-[45px] h-[45px] rounded-[10px]"
+                  src={item.icon}
+                  alt="Profile picture" /> */}
+                                        <h1 className="navbar-profile-gradient-background text-center text-[16px] font-bold text-white">{getIntialials('Mahmud', 'Hasan')}</h1>
+                                    </div>
+
+                                    <div className="mt-1 ml-2 flex flex-col justify-center">
+                                        <span className="text-black font-medium text-[13px]">{`${_.capitalize('Mahmud')} ${_.capitalize('Hasan')}`}</span>
+                                        {/* <span className="text-[#00000080] font-normal text-[12px] mt-0">View Account</span> */}
+                                    </div>
                                 </div>
                             </div>
 
-                        </div>
-
-                        {initialMenu.map((item, index) => (
-                            <div
-                                key={index}
-                                className={`cursor-pointer flex justify-start items-center`}
-                                onClick={() => handleInitialMenuItemClick(index)}
-                            >
-                                <div className="flex items-center justify-start mt-6">
-                                    <Image
-                                        src={selectedIndex === index ? item.selectedIcon : item.icon}
-                                        width={20}
-                                        height={20}
-                                        alt="sideBar"
-                                        style={{ objectFit: "contain" }}
-                                        quality={75}
-                                    />
-                                    <span className={`ml-[12px] text-[14px] ${selectedIndex === index ? 'font-bold text-black' : 'font-normal text-[#909090]'}`}>{item.name}</span>
-
-                                </div>
-                            </div>
-                        ))}
-
+                        </div >
                     </div>
-                </div>
-            )}
-            {show ? <ModalOverlay /> : <></>}
+                </div >
+            )
+            }
+            {authValue.isAuth && userData?.tags && show ? <ModalOverlay /> : <></>}
         </>
     );
 }
