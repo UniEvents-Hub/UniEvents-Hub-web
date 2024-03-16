@@ -74,7 +74,7 @@ function EventDetailsPage() {
 
                                 With over $10,000 in items up for grabs, there is sure to be something for everyone.
 
-                                Tables will be set at 10 per table, however you don't need 10 to book as we will have some shared tables available.
+                                Tables will be set at 10 per table, however you dont need 10 to book as we will have some shared tables available.
 
                                 Your support will help is raise vital funds for the Bendigo SES Unit.
 

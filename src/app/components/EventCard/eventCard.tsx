@@ -33,21 +33,21 @@ export default function EventCard({ label }: any) {
     }
 
     const handleCategorySelected = (category: any, index: number) => {
-        if (category) {
-            // dispatch(setSelectedTag(category.slug))
-            var newState: any[] = []
-            // set the selected property to false for all categories
-            categories.forEach((item: any) => {
-                newState.push({ ...item, selected: false })
-            })
-            // set the selected property to true for the selected category
-            newState[index] = { ...category, selected: true }
-            // setSelectedTags(selectTags)
-            setCategories(newState)
-        }
+        // if (category) {
+        //     // dispatch(setSelectedTag(category.slug))
+        //     var newState: any[] = []
+        //     // set the selected property to false for all categories
+        //     categories.forEach((item: any) => {
+        //         newState.push({ ...item, selected: false })
+        //     })
+        //     // set the selected property to true for the selected category
+        //     newState[index] = { ...category, selected: true }
+        //     // setSelectedTags(selectTags)
+        //     setCategories(newState)
+        // }
     }
 
-    const goToDetails = () => {
+    const goToDetails = (event: any) => {
         router.push('/eventDetails')
     }
 

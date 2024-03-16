@@ -15,7 +15,7 @@ function ProfilePage() {
     const router = useRouter();
     const userData = useAppSelector((store) => store.appReducer.userData);
     const [image, setImage] = useState(null);
-    const fileInputRef = useRef<HTMLFormElement>(null);
+    const fileInputRef = useRef<any>(null);
     const dispatch = useDispatch();
 
     // const doLogOut = () => {
