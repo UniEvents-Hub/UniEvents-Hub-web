@@ -47,6 +47,10 @@ export default function EventCard({ label }: any) {
         }
     }
 
+    const goToDetails = () => {
+        router.push('/eventDetails')
+    }
+
     return (
         <div className="h-full w-full mt-4">
             {
@@ -58,7 +62,7 @@ export default function EventCard({ label }: any) {
                                 className="flex flex-wrap gap-6"
                             >
                                 {events.map((event: any, index: any) => (
-                                    <div key={index} className="w-[318px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                                    <div key={index} onClick={() => goToDetails(event)} className="w-[318px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                                         <a href="#">
                                             <img
                                                 className="rounded-t-lg w-[318px] h-[150px]"
