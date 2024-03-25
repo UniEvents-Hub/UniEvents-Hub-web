@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { ReduxProvider } from "@/app/redux/provider";
 import AuthLayout from "../app/Layout/AuthLayout";
 import NavBarLayout from '../app/components/NavBar/NavBarLayout';
 
@@ -23,16 +24,19 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className="bg-white">
-        <div className="min-h-screen">
-          <div className="flex">
-            {/* <NavBarLayout /> */}
-            <div className="flex flex-col flex-grow w-screen md:w-full min-h-screen">
-              <AuthLayout>
-                <div className="main-body">{children}</div>
-              </AuthLayout>
+        <ReduxProvider>
+          <div className="min-h-screen">
+            <div className="flex">
+              <NavBarLayout />
+              <div className="flex flex-col flex-grow w-screen min-h-screen main-layout">
+                <AuthLayout>
+                  <div className="main-body">{children}</div>
+                </AuthLayout>
+              </div>
             </div>
           </div>
-        </div>
+          {/* <Footer /> */}
+        </ReduxProvider>
       </body>
     </html>
   );
