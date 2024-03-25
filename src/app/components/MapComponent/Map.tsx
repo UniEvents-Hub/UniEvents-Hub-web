@@ -26,7 +26,7 @@ const MapView = () => {
 
     return (
 
-        <MapContainer center={position} zoom={13} style={{ height: '350px', width: '96%', marginLeft: 20, marginRight: 0 }}>
+        <MapContainer center={position} zoom={13} style={{ height: '350px', width: '96%', marginLeft: 0, marginRight: 0 }}>
             <ChangeView center={position} zoom={13} />
             <TileLayer
                 attribution="" // Empty attribution to hide the marketing text

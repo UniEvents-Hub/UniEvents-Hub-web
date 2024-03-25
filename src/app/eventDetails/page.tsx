@@ -7,7 +7,7 @@ import UpcomingList from "@/app/components/categories/UpcomingList";
 import EventCard from "@/app/components/EventCard/eventCard"
 import MapView from '@/app/components/MapComponent/Map';
 import CheckoutModal from "./checkout-modal"
-import ShareModal from "./share-modal"
+import ShareModal from "../components/EventCard/share-modal"
 
 function EventDetailsPage() {
     const [backgroundGradiant, setBackgroundGradient] = useState<string>("all-gradient-background");
@@ -83,7 +83,8 @@ function EventDetailsPage() {
                         </div>
 
                     </div>
-                    <div className="w-[30%] h-full flex justify-end ">
+
+                    <div className="w-[30%] h-full flex justify-end items-end ml-auto">
                         <div className="w-[300px] h-full py-4 px-4 flex flex-col justify-end border-[1px] rounded-[10px] border-gray-300">
 
                             <div className="flex w-[260px] justify-between gap-2 ">
@@ -117,7 +118,7 @@ function EventDetailsPage() {
                 </div >
 
                 <div className="flex flex-col items-start mt-4 w-[60%] mb-20">
-                    <h5 className="mb-2 text-[26px] font-bold tracking-tight text-gray-900 dark:text-white">Location</h5>
+                    <h1 className="mb-2 text-[26px] font-bold text-gray-900 dark:text-white">Location</h1>
                     <MapView />
                 </div>
             </div >

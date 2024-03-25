@@ -65,11 +65,11 @@ export default function UpcomingList({ label }: any) {
                                     <div
                                         onClick={() => handleCategorySelected(item, index)}
                                         key={index}
-                                        className={`h-[35px] rounded-full px-4 py-3 text-sm font-semibold hover:bg-blue cursor-pointer flex items-center justify-center ${item.selected ? 'bg-[#333E48] border border-[#616161]' : 'border border-[#616161]'
+                                        className={`h-[35px] w-[100px] rounded-full px-4 py-3 text-sm font-semibold hover:bg-blue cursor-pointer flex items-center justify-center ${item.selected ? 'bg-[#333E48] border border-[#616161]' : 'border border-[#616161]'
                                             }`}
                                     >
 
-                                        <span className={`select-none ${item.selected ? 'text-white text-[12px] font-bold' : 'text-gray-600 text-[14px] font-medium'}`}>{item.name}</span>
+                                        <span className={`text-center select-none ${item.selected ? 'text-white text-[12px] font-medium' : 'text-gray-600 text-[12px] font-medium'}`}>{item.name}</span>
 
                                     </div>
                                 ))}
