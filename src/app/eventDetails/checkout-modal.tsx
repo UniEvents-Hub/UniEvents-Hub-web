@@ -2,10 +2,13 @@
 
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import Image from 'next/image'
+import { useRouter } from "next/navigation";
 import PhoneInput from "react-phone-input-2";
 import 'react-phone-input-2/lib/style.css'
 import { useAppSelector } from "@/app/redux/store";
 import { getValueFromFormData, isEmpty } from "@/app/utils/utility-function"
+import { loadStripe } from "@stripe/stripe-js";
+import axios from "axios";
 
 type FormType = {
     firstName: string;
@@ -16,9 +19,15 @@ type FormType = {
 
 interface CheckoutModalProps {
     onClose: () => void;
+    amount: number;
+    quantity: number;
 }
 
-const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose }) => {
+const asyncStripe = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+console.log('process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY', process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+
+const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, amount = 1, quantity = 1 }) => {
+    const router = useRouter();
     const userData = useAppSelector((store) => store.appReducer.userData);
     const formRef = useRef<HTMLFormElement>(null);
     const [formData, setFormData] = useState<FormType>({
@@ -68,16 +77,40 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose }) => {
         };
     }
 
+    const handler = async () => {
+        try {
+            const { data } = await axios.post("/api/stripe", {
+                data: { amount: amount, quantity: quantity },
+            }, {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            console.log('res.vvvv.', data)
+            window.location.href = data.url
+            // const { sessionId } = await res.json();
+
+            // const { error } = await stripe.redirectToCheckout({ sessionId });
+            // console.log(error);
+            // if (error) {
+            //     router.push("/errorPage");
+            // }
+        } catch (err) {
+            console.log(err);
+            // router.push("/error");
+        }
+    };
+
     const handleClose = (e: any) => {
         if (e.target.id === 'wrapper') onClose();
     }
     return (
-        <div id="wrapper" onClick={handleClose} aria-hidden="true" className="fixed top-0 right-0 bg-black bg-opacity-60 h-full w-full flex items-center justify-center" style={{ 'zIndex': 100 }}>
+        <div id="wrapper" onClick={handleClose} aria-hidden="true" className="fixed top-0 right-0 bg-black bg-opacity-60 h-full w-full flex items-center justify-center" style={{ 'zIndex': 9999 }}>
             <div className="relative p-0 md:w-[60%] w-[330px] max-w-full max-h-full">
 
                 <div className="bg-white rounded-[20px] overflow-hidden shadow dark:bg-gray-700">
                     <div className="flex md:flex-row flex-col flex-wrap justify-start ">
-                        <div className="md:w-[60%] w-full flex flex-col h-[60%] relative">
+                        <div className="md:w-[70%] w-full flex flex-col h-[60%] relative">
                             <div className="h-[50px] w-full flex flex-col justify-center items-center">
                                 <h1 className="mt-6 text-[20px]">Checkout</h1>
 
@@ -86,8 +119,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose }) => {
 
                             <div className="px-[60px] mt-10">
                                 <h1 className="ml-6 text-[24px]"> Billing information</h1>
-
-
                                 <form action={formSubmitAction} ref={formRef}>
                                     <div className="flex flex-col">
                                         <div className="bg-white rounded-lg relative">
@@ -159,18 +190,15 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose }) => {
                                         </div>
                                     </div>
                                     <div className="ml-6">
-                                        <button type="submit" className={submitButtonClasses}>
+                                        <button type="submit" className={submitButtonClasses} onClick={handler}>
                                             Proceed to Payment
                                         </button>
                                     </div>
                                 </form>
                             </div>
-
-
-
                         </div>
 
-                        <div className="flex flex-col md:w-[40%] w-full md:h-full h-full justify-start bg-gray-100 md:pr-0 pr-0 pt-0 md:pb-6 pb-2">
+                        <div className="flex flex-col md:w-[30%] w-full md:h-full h-full justify-start bg-gray-100 md:pr-0 pr-0 pt-0 md:pb-6 pb-2">
                             <img
                                 src="/images/battle_event.jpeg"
                                 alt="Description of your image"

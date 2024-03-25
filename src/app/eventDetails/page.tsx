@@ -5,12 +5,14 @@ import Image from "next/image";
 import CategoryList from "@/app/components/categories/CategoryList";
 import UpcomingList from "@/app/components/categories/UpcomingList";
 import EventCard from "@/app/components/EventCard/eventCard"
+import MapView from '@/app/components/MapComponent/Map';
 import CheckoutModal from "./checkout-modal"
 import ShareModal from "./share-modal"
 
 function EventDetailsPage() {
     const [backgroundGradiant, setBackgroundGradient] = useState<string>("all-gradient-background");
     const [ticketCount, setTicketCount] = useState(1)
+    const [ticketPrice, setTicketPrice] = useState(10);
     const [isCheckoutModalShow, setIsCheckoutModalShow] = useState(false);
     const [isShareModalShow, setIsShareModalShow] = useState(false);
 
@@ -36,9 +38,6 @@ function EventDetailsPage() {
                                 className="w-[20px] h-[20px] object-stretch" />
                             <p className="ml-2 text-[14px] font-normal text-black dark:text-gray-400">Universirty Of Alberta</p>
                         </div>
-
-
-
                     </div>
 
                     <div className="w-[10%] flex items-center gap-6 justify-end">
@@ -106,32 +105,28 @@ function EventDetailsPage() {
                                 </div>
 
                             </div>
-                            <span className="text-left text-[16px] mt-6">CAD ${ticketCount * 20.00}</span>
+                            <span className="text-left text-[16px] mt-6">CAD ${ticketCount * ticketPrice}</span>
 
                             <button onClick={() => setIsCheckoutModalShow(true)}
                                 className="h-[30px] w-full mx-[0px] mt-2 bg-red-600 rounded-[10px] items-center">
-                                <span className="text-[14px] text-white"> Check out for CAD ${ticketCount * 20.00} </span>
-
+                                <span className="text-[14px] text-white"> Check out for CAD ${ticketCount * ticketPrice} </span>
                             </button>
                         </div>
 
                     </div>
                 </div >
 
-                <div className="flex flex-col items-start mt-4 w-[60%] ">
+                <div className="flex flex-col items-start mt-4 w-[60%] mb-20">
                     <h5 className="mb-2 text-[26px] font-bold tracking-tight text-gray-900 dark:text-white">Location</h5>
-                    <img
-                        src="/images/map_sample.png"
-                        alt="Description of your image"
-                        className="w-full h-[400px] object-stretch" />
+                    <MapView />
                 </div>
-
-
             </div >
 
             {isCheckoutModalShow ? (
                 <CheckoutModal
                     onClose={() => setIsCheckoutModalShow(false)}
+                    amount={ticketPrice}
+                    quantity={ticketCount}
                 />
             ) : null}
 
