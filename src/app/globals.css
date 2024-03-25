@@ -18,6 +18,51 @@
   --Gray: #333133;
 }
 
+.socialButton {
+  width: 300px;
+  height: 50px;
+  display: block;
+  position: relative;
+  margin: auto;
+  margin-top: 20px;
+  padding: 10px;
+  line-height: 30px;
+  outline: none !important;
+  /* border-radius:3px; */
+
+}
+
+
+.spanStyle{
+  margin-left: '180px';
+}
+
+.socialButton.facebook {
+  color: #3b5998;
+  box-shadow: 0 0 0 1px #3b5998;
+}
+.socialButton.twitter {
+  color: #00a0d1;
+  /* position: center; */
+  box-shadow: 0 0 0 1px #00a0d1;
+}
+.socialButton.googleplus {
+  color: #db4a39;
+  box-shadow: 0 0 0 1px #db4a39;
+}
+.socialButton.facebook:hover {
+  background: #3b5998;
+  color: #fff;
+}
+.socialButton.twitter:hover {
+  background: #00a0d1;
+  color: #fff;
+}
+.socialButton.googleplus:hover {
+  background: #db4a39;
+  color: #fff;
+}
+
 body {
   background: 'white'
     /* background-image: linear-gradient(to top, #ffefd0, #e09ddc 19%, #eabce7 45%, #4891dc 68%, #3c4051); */
