@@ -4,12 +4,14 @@ import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/app/redux/store";
+import ShareModal from "./share-modal"
 import Image from 'next/image'
 
 
 
-export default function EventCard({ label }: any) {
+export default function FavouriteCard({ label }: any) {
     const router = useRouter();
+    const [isShareModalShow, setIsShareModalShow] = useState(false);
     const [events, setEvents] = useState<any[]>([,
         { id: 0, name: 'U of A Forestry Graduation Night', slug: 'all', selected: false, image: "/images/event_banner.jpeg" },
         { id: 1, name: 'CSC Edmonton Presents:National Building Code Changes – 2023 Alberta Edition', slug: 'today', selected: false, image: "/images/csc_event.jpeg" },
@@ -62,32 +64,43 @@ export default function EventCard({ label }: any) {
                                 className="flex flex-wrap gap-6"
                             >
                                 {events.map((event: any, index: any) => (
-                                    <div key={index} onClick={() => goToDetails(event)} className="w-[280px] pb-4 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                                        <a href="#">
+                                    <div key={index} onClick={() => goToDetails(event)} className="h-[230px] w-full flex flex-row justify-between bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                                        {/* <a href="#">
                                             <img
                                                 className="rounded-t-lg w-[312px] h-[150px]"
                                                 src={event.image} alt="" />
-                                        </a>
-                                        <div className="p-5 h-[40%]">
+                                        </a> */}
+                                        <div className="w-[80%] p-5">
                                             <a href="#">
-                                                <h5 className="mb-2 text-[16px] font-bold tracking-tight text-gray-900 dark:text-white">{event.name}</h5>
+                                                <h1 className="mb-2 text-[24px] font-bold tracking-tight text-gray-900 dark:text-white">{event.name}</h1>
                                             </a>
-                                            <p className="mb-[6px] text-[12px] font-normal text-gray-700 dark:text-gray-400">Tuesday, Mar 12, 1:00 PM</p>
-                                            <p className="mb-3 text-[12px] font-normal text-gray-700 dark:text-gray-400">Universirty Of Alberta</p>
-
+                                            <p className="mb-[6px] text-[16px] font-normal text-red-500 dark:text-gray-400">Tuesday, Mar 12, 1:00 PM</p>
+                                            <p className="mb-3 text-[16px] font-normal text-gray-700 dark:text-gray-400">Universirty Of Alberta</p>
+                                            <p className="mb-0 text-[16px] font-bold text-gray-700 dark:text-gray-400">CAD $100.00</p>
                                         </div>
-                                        <div className='h-[20%] flex flex-row justify-between items-center mx-4 pb-4'>
-                                            <p className="font-normal text-gray-700 dark:text-gray-400">CAD $100.00</p>
-                                            <div className={`h-[40px] w-[40px] rounded-full hover:bg-blue cursor-pointer flex items-center justify-center  border border-gray-300`}>
+                                        <div className='flex flex-col justify-between items-center'>
+                                            <img
+                                                className=" w-[312px] h-[150px]"
+                                                src={event.image} alt="" />
 
-                                                <img
-                                                    src="/images/unfavourite_icon.svg"
-                                                    alt="Description of your image"
-                                                    className="w-[20px] h-[20px] object-cover" />
-                                                {/* <span className="text-[12px]">Save</span> */}
+                                            <div className="ml-auto flex items-center gap-6 justify-end pb-4 mr-6">
+
+                                                <div className={`h-[40px] w-[40px] rounded-full hover:bg-blue cursor-pointer flex items-center justify-center  border border-gray-300`}>
+                                                    <img
+                                                        src="/images/favourite_icon.svg"
+                                                        alt="Description of your image"
+                                                        className="w-[20px] h-[20px] object-cover" />
+                                                    {/* <span className="text-[12px]">Save</span> */}
+                                                </div>
+                                                <div onClick={() => setIsShareModalShow(true)} className={`h-[40px] w-[40px] rounded-full hover:bg-blue cursor-pointer flex items-center justify-center  border border-gray-300`}>
+                                                    <img
+                                                        src="/images/share_icon.svg"
+                                                        alt="Description of your image"
+                                                        className="w-[20px] h-[20px] object-cover" />
+                                                    {/* <span className="text-[12px]">Share</span> */}
+                                                </div>
                                             </div>
                                         </div>
-
                                     </div>
                                 ))}
                             </div>
@@ -97,7 +110,11 @@ export default function EventCard({ label }: any) {
 
                     </div>
             }
-
+            {
+                isShareModalShow ?
+                    <ShareModal
+                        onClose={() => setIsShareModalShow(false)} /> : null
+            }
         </div>
     );
 }

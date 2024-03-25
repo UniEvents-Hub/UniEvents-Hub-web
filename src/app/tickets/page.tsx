@@ -4,9 +4,10 @@ import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import CategoryList from "@/app/components/categories/CategoryList";
 import UpcomingList from "@/app/components/categories/UpcomingList";
-import EventCard from "@/app/components/EventCard/eventCard"
+import FavouriteCard from "@/app/components/EventCard/favouriteCard";
+import OrderCard from "@/app/components/Orders/orderCard";
 
-function DashboardPage() {
+function TicketsPage() {
     const [backgroundGradiant, setBackgroundGradient] = useState<string>("tech-gradient-background");
 
     return (
@@ -16,24 +17,15 @@ function DashboardPage() {
                     <img
                         src="/images/event_banner.jpeg"
                         alt="Description of your image"
-                        className="w-full h-[400px] object-cover" />
+                        className="w-full h-[300px] object-cover" />
                 </div>
-                <div className="md:pt-10 pt-20">
-                    <CategoryList
-                        label={"EVENTS"}
-                    />
-                </div>
-                <hr className="mr-0 mt-4 h-[2px] border-t-0 bg-gray-200" />
 
 
-                <div className="w-[1200px] h-full ml-auto mr-auto  overflow-x-scroll no-scrollbar ">
+                <div className="w-[1000px] h-full ml-auto mr-auto  overflow-x-scroll no-scrollbar  mt-10">
+
                     <div>
-                        <UpcomingList
-                            label={"EVENTS"}
-                        />
-                    </div>
-                    <div>
-                        <EventCard />
+                        <h1 className="text-#1C1C1C text-[38px] text-bold text-left mb-6">My Orders</h1>
+                        <OrderCard />
                     </div>
                     {/*   */}
                     {/* <EventCard /> */}
@@ -45,4 +37,4 @@ function DashboardPage() {
     )
 }
 
-export default DashboardPage;
+export default TicketsPage;

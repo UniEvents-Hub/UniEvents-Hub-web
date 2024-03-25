@@ -52,7 +52,7 @@ export default function CategoryList({ label }: any) {
     }
 
     return (
-        <div className="h-[140px] mx-[100px]">
+        <div className="h-[140px] mx-[50px]">
             {
                 categories && categories.length ?
                     <>
