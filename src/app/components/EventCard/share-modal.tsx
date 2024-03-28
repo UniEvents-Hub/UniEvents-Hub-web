@@ -26,7 +26,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ onClose }) => {
         if (e.target.id === 'wrapper') onClose();
     }
     return (
-        <div id="wrapper" onClick={handleClose} aria-hidden="true" className="fixed top-0 right-0 bg-black bg-opacity-60 h-full w-full flex items-center justify-center" style={{ 'zIndex': 100 }}>
+        <div id="wrapper" onClick={handleClose} aria-hidden="true" className="fixed top-0 right-0 bg-black bg-opacity-60 h-full w-full flex items-center justify-center" style={{ 'zIndex': 1000 }}>
             <div className="relative p-0 md:w-[600px] w-[330px] max-w-full max-h-full">
 
                 <div className="bg-white rounded-[20px] overflow-hidden shadow dark:bg-gray-700">
@@ -58,18 +58,21 @@ const ShareModal: React.FC<ShareModalProps> = ({ onClose }) => {
 
                                 <div className="flex gap-6 mt-6">
                                     <FacebookShareButton
-                                        url={'http://localhost:3000'} >
+                                        url={'https://github.com/next-share'}
+                                        quote={'next-share is a social share buttons for your next React apps.'}
+                                        hashtag={'#nextshare'} >
                                         <FacebookIcon size={32} round />
                                     </FacebookShareButton>
 
                                     <WhatsappShareButton
                                         /* Url you want to share */
-                                        url={'http://localhost:3000'} >
+                                        url={'https://github.com/next-share'}
+                                        title={'next-share is a social share buttons for your next React apps.'}
+                                        separator=":: " >
                                         <WhatsappIcon size={32} round />
                                     </WhatsappShareButton>
                                     <LinkedinShareButton
-                                        /* Url you want to share */
-                                        url={'http://localhost:3000'} >
+                                        url={'https://github.com/next-share'} >
                                         <LinkedinIcon size={32} round />
                                     </LinkedinShareButton>
                                 </div>

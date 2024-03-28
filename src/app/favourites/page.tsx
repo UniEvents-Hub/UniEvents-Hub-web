@@ -11,16 +11,13 @@ function FavouritesPage() {
 
     return (
         <>
-            <div className={`flex flex-col pl-[200px] w-full overflow-hidden no-scrollbar ${backgroundGradiant} `}>
+            <div className={`flex flex-col md:pl-[200px] px-[60px] w-full overflow-hidden no-scrollbar ${backgroundGradiant} `}>
                 <div className="bg-opacity-100">
-                    <img
-                        src="/images/event_banner.jpeg"
-                        alt="Description of your image"
-                        className="w-full h-[300px] object-cover" />
+
                 </div>
 
 
-                <div className="w-[1000px] h-full ml-auto mr-auto  overflow-x-scroll no-scrollbar  mt-10">
+                <div className="md:w-[50%] h-full ml-auto mr-auto  overflow-x-scroll no-scrollbar  mt-10">
 
                     <div>
                         <h1 className="text-#1C1C1C text-[38px] text-bold text-left mb-6">Favourites</h1>

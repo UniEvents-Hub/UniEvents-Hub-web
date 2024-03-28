@@ -52,6 +52,13 @@ export default function OrderCard({ label }: any) {
         router.push('/eventDetails')
     }
 
+    const handleDownloadPdf = () => {
+        <a href="/order-1.pdf" target="_blank" rel="noopener noreferrer" download>
+            Download Catalog
+        </a>
+
+    }
+
     return (
         <div>
             {
@@ -63,21 +70,35 @@ export default function OrderCard({ label }: any) {
                                 className="flex flex-wrap gap-6"
                             >
                                 {events.map((event: any, index: any) => (
-                                    <div key={index} onClick={() => goToDetails(event)} className="h-[240px] w-full flex flex-col justify-between bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                                    <div key={index} className=" w-full flex md:flex-col flex-col md:justify-between bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                                         {/* <a href="#">
                                             <img
                                                 className="rounded-t-lg w-[312px] h-[150px]"
                                                 src={event.image} alt="" />
                                         </a> */}
-                                        <div className="w-[100%] h-[60%] flex">
+                                        <div className="w-[100%] flex md:flex-row flex-col">
                                             <img
-                                                className=" w-[312px] h-[120px]"
+                                                onClick={() => goToDetails(event)}
+                                                className="md:w-[312px] w-[100%] h-[120px]"
                                                 src={event.image} alt="" />
-                                            <div className='w-[60%] ml-6 mt-4'>
-                                                <a href="#">
-                                                    <h1 className="mb-2 text-[18px] font-bold tracking-tight text-gray-900 dark:text-white">{event.name}</h1>
-                                                </a>
-                                                <p className="mb-[6px] text-[16px] font-normal text-red-500 dark:text-gray-400">Tuesday, Mar 12, 1:00 PM</p>
+                                            <div className='md:w-[70%] w-[100%] ml-6 mt-4'>
+                                                <div className="flex md:justify-start justify-between items-start mt-0">
+                                                    <a onClick={() => goToDetails(event)}>
+                                                        <h1 className="w-[90%] mb-2 text-[18px] font-bold tracking-tight text-gray-900 dark:text-white">{event.name}</h1>
+                                                    </a>
+                                                    <div className='w-[160px] block md:hidden ml-auto mt-0 mr-8 bg-gray-200 h-[50px] rounded-lg p-4 flex justify-center items-center cursor-pointer hover:underline hover:bg-blue-300'>
+                                                        <span className="mb-0 text-[12px] font-bold text-gray-700 dark:text-gray-400">View Order Details</span>
+
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center justify-start mt-2  cursor-pointer hover:underline">
+                                                    <img
+                                                        src="/images/calender_icon.svg"
+                                                        alt="Description of your image"
+                                                        className="w-[20px] h-[20px] object-stretch" />
+                                                    <p className="mb-[2px] ml-2 text-[16px] font-normal text-red-500 dark:text-gray-400">Tuesday, Mar 12, 1:00 PM</p>
+                                                </div>
+
                                                 <div className="flex items-center justify-start mt-2  cursor-pointer hover:underline">
                                                     <img
                                                         src="/images/location_icon.svg"
@@ -86,20 +107,22 @@ export default function OrderCard({ label }: any) {
                                                     <p className="ml-2 text-[14px] font-normal text-black dark:text-gray-400">Universirty Of Alberta</p>
                                                 </div>
                                             </div>
-                                            <div className='w-[210px] ml-auto mt-4 mr-4 bg-gray-200 h-[50px] rounded-lg p-4 flex justify-center items-center cursor-pointer hover:underline hover:bg-blue-300'>
-                                                <span className="mb-0 text-[14px] font-bold text-gray-700 dark:text-gray-400">View Order Details</span>
+
+                                            <div className='w-[220px] hidden md:flex ml-auto mt-4 mr-4 bg-gray-200 h-[50px] rounded-lg p-4 justify-center items-center cursor-pointer hover:underline hover:bg-blue-300'>
+                                                <span className="mb-0 text-[12px] font-bold text-gray-700 dark:text-gray-400">View Order Details</span>
 
                                             </div>
                                         </div>
-                                        <hr className="mr-0 mt-2 h-[2px] border-t-0 bg-gray-200" />
+
+                                        <hr className="mr-0 md:mt-2 mt-4 h-[2px] border-t-0 bg-gray-200" />
 
 
-                                        <div className="h-[40%] flex justify-between items-center pb-4 ml-10 mr-10 pt-4">
+                                        <div className="flex md:flex-row flex-col md:justify-between justify-start md:items-center items-start pb-4 ml-10 mr-10 pt-4">
 
-                                            <div className='flex items-center'>
+                                            <div className='flex items-center md:py-0 py-2'>
                                                 <div className={`h-[40px] w-[40px] rounded-full hover:bg-blue cursor-pointer flex items-center justify-center  border border-gray-300`}>
                                                     <img
-                                                        src="/images/favourite_icon.svg"
+                                                        src="/images/order_icon.png"
                                                         alt="Description of your image"
                                                         className="w-[20px] h-[20px] object-cover" />
                                                     {/* <span className="text-[12px]">Save</span> */}
@@ -111,10 +134,10 @@ export default function OrderCard({ label }: any) {
                                                 </div>
                                             </div>
 
-                                            <div className='flex items-center'>
+                                            <div className='flex items-center md:py-0 py-2'>
                                                 <div className={`h-[40px] w-[40px] rounded-full hover:bg-blue cursor-pointer flex items-center justify-center  border border-gray-300`}>
                                                     <img
-                                                        src="/images/favourite_icon.svg"
+                                                        src="/images/ticket_icon.svg"
                                                         alt="Description of your image"
                                                         className="w-[20px] h-[20px] object-cover" />
                                                     {/* <span className="text-[12px]">Save</span> */}
@@ -126,10 +149,10 @@ export default function OrderCard({ label }: any) {
                                                 </div>
                                             </div>
 
-                                            <div className='flex items-center'>
+                                            <div className='flex items-center md:py-0 py-2'>
                                                 <div className={`h-[40px] w-[40px] rounded-full hover:bg-blue cursor-pointer flex items-center justify-center  border border-gray-300`}>
                                                     <img
-                                                        src="/images/favourite_icon.svg"
+                                                        src="/images/amount_icon.svg"
                                                         alt="Description of your image"
                                                         className="w-[20px] h-[20px] object-cover" />
                                                     {/* <span className="text-[12px]">Save</span> */}
@@ -142,20 +165,23 @@ export default function OrderCard({ label }: any) {
                                                 </div>
                                             </div>
 
-                                            <div className='flex items-center'>
+                                            <div className='flex items-center md:py-0 py-2'>
                                                 <div className={`h-[40px] w-[40px] rounded-full hover:bg-blue cursor-pointer flex items-center justify-center  border border-gray-300`}>
                                                     <img
-                                                        src="/images/favourite_icon.svg"
+                                                        src="/images/pdf_icon.svg"
                                                         alt="Description of your image"
                                                         className="w-[20px] h-[20px] object-cover" />
                                                     {/* <span className="text-[12px]">Save</span> */}
 
                                                 </div>
-                                                <div className='flex flex-col items-start ml-2'>
-                                                    <span className="text-[14px] text-gray-500">Invoice</span>
-                                                    <span className="text-[12px] text-blue-500  cursor-pointer hover:underline">Download</span>
+                                                <a href="/order-1.pdf" target="_blank" rel="noopener noreferrer" download>
+                                                    <div className='flex flex-col items-start ml-2'>
 
-                                                </div>
+                                                        <span className="text-[14px] text-gray-500">Invoice</span>
+                                                        <span className="text-[12px] text-blue-500  cursor-pointer hover:underline">Download</span>
+
+                                                    </div>
+                                                </a>
                                             </div>
                                         </div>
                                     </div>

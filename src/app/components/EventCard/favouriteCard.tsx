@@ -78,6 +78,7 @@ export default function FavouriteCard({ label }: any) {
                                             <p className="mb-3 text-[16px] font-normal text-gray-700 dark:text-gray-400">Universirty Of Alberta</p>
                                             <p className="mb-0 text-[16px] font-bold text-gray-700 dark:text-gray-400">CAD $100.00</p>
                                         </div>
+
                                         <div className='flex flex-col justify-between items-center'>
                                             <img
                                                 className=" w-[312px] h-[150px]"

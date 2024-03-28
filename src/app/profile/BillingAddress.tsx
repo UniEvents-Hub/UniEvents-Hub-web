@@ -179,7 +179,7 @@ export default function BillingAddress({ }) {
                             Your name, email and phone number registered to your account.
                         </span> */}
                     </div>
-                    <form action={formSubmitAction} ref={formRef} className="w-[50%]">
+                    <form action={formSubmitAction} ref={formRef} className="md:w-[50%] w-[100%]">
                         <div className="flex flex-col">
                             <div className="bg-white rounded-lg relative">
                                 <div className="p-6 space-y-4">

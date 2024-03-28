@@ -171,7 +171,7 @@ export default function HomeAddress({ }) {
 
     return (
         <>
-            <div className="col-span-4 sm:col-span-9">
+            <div className="col-span-4 sm:col-span-9 ">
                 <div className="bg-white rounded-[20px] my-6 relative">
                     <div className="flex-col items-start p-5">
                         <h3 className="md:text-xl text-[15px] font-bold">Home Address</h3>
@@ -179,7 +179,7 @@ export default function HomeAddress({ }) {
                             Your name, email and phone number registered to your account.
                         </span> */}
                     </div>
-                    <form action={formSubmitAction} ref={formRef} className="w-[50%]">
+                    <form action={formSubmitAction} ref={formRef} className="md:w-[50%] w-[100%]">
                         <div className="flex flex-col">
                             <div className="bg-white rounded-lg relative">
                                 <div className="p-6 space-y-4">

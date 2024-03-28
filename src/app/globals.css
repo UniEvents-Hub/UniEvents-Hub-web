@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import '@fortawesome/fontawesome-free/css/all.css';
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -16,6 +17,8 @@
   --Neutrals-Main-Neutral---Barley-White: #FFF1D0;
   /* --C-Tribe-x-Tech-2023---Color-Palette-Dark-Gray: #333133; */
   --Gray: #333133;
+  --bs-ua-gold: #f2cd00;
+  --bs-ua-green: #007a33;
 }
 
 .socialButton {
@@ -107,6 +110,84 @@ body {
 
 .default-sideBar {
   height: 100vh
+}
+
+.searchBarContainer {
+  display: flex; 
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  /* margin-right: 100px; */
+  background-color: var(--bs-ua-gold);
+  position: fixed;
+  /* position: sticky; */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  /* background: linear-gradient(to top, #E2E2E5, #E6E2E9, #E9E3EC); */
+  /* color: white; */
+  z-index: 9999;
+  margin-left: 200px;
+  /* padding: 10px 20px; */
+  /* background: linear-gradient(to top, #FBF2F9, #FBF2F9, #FBF2F9); */
+  /* background-color: black; */
+}
+
+.headerText {
+  /* background: linear-gradient(to top, #FBF2F9, #FBF2F9, #FBF2F9); */
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  /* padding-top: 30px; */
+  margin-left: 20px;
+  color: white;
+  /* background-color: black; */
+}
+
+
+/* Style the search container */
+.search-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Style the input field */
+.search-container input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+  
+}
+.search-container input[type="text"]:focus {
+  border-color: white; /* Change to your desired color */
+  outline: 0;
+}
+
+.search-container input:focus-visible {
+  border-color: white; /* Change to your desired color */
+  outline: 0;
+}
+
+/* .search-container button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 14.5px;
+  background-color: #ddd;
+  border: none;
+  border-radius: 5px 5px 5px 5px;
+  cursor: pointer;
+} */
+
+/* Style the search icon */
+.search-container button i {
+  font-size: 16px;
 }
 
 /* PASSES PAGE STYLES */
