@@ -17,9 +17,10 @@ export default function CategoryList({ label }: any) {
         { id: 3, name: 'Gaming', slug: 'gaming', selected: false },
         { id: 4, name: 'Culture', slug: 'culture', selected: false },
         { id: 5, name: 'Music', slug: 'music', selected: false },
-        { id: 5, name: 'Food & Drink', slug: 'music', selected: false },
-        { id: 6, name: 'Health', slug: 'music', selected: false },
-        { id: 7, name: 'Business', slug: 'music', selected: false }]);
+        // { id: 5, name: 'Food & Drink', slug: 'music', selected: false },
+        { id: 6, name: 'Health', slug: 'health', selected: false },
+        // { id: 7, name: 'Business', slug: 'music', selected: false }
+    ]);
     const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {

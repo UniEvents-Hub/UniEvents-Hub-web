@@ -26,16 +26,19 @@ type MenuItem = {
 
 const initialMenu: MenuItem[] = [
     {
-        name: "Home",
-        href: "/dashboard",
+        name: "Explore Events",
+        href: "/exploreEvents",
         icon: "/images/navbar/dashboard.svg",
         selectedIcon: "/images/navbar/dashboard_selected.svg"
     },
-    { name: "Tickets", href: "/tickets", icon: "/images/navbar/schedule.svg", selectedIcon: "/images/navbar/schedule_selected.svg" },
-    { name: "Favourites", href: "/favourites", icon: "/images/navbar/coming_soon.svg", selectedIcon: "/images/navbar/schedule_selected.svg" },
-    { name: "My Gallery", href: "/gallery", icon: "/images/navbar/speaker.svg", selectedIcon: "/images/navbar/speaker_selected.svg" },
+    { name: "Tickets", href: "/tickets", icon: "/images/navbar/tickets.svg", selectedIcon: "/images/navbar/tickets_selected.svg" },
+    { name: "Favourites Events", href: "/favourites", icon: "/images/navbar/favourites.svg", selectedIcon: "/images/navbar/favourites_selected.svg" },
+
+    { name: "Create Event", href: "/createEvent", icon: "/images/navbar/create_event.svg", selectedIcon: "/images/navbar/create_event_selected.svg" },
+    { name: "My Events", href: "/organizations/events", icon: "/images/navbar/my_event.svg", selectedIcon: "/images/navbar/my_event_selected.svg" },
+    { name: "My Gallery", href: "/gallery", icon: "/images/navbar/gallery.svg", selectedIcon: "/images/navbar/gallery_selected.svg" },
     { name: "Profile Settings", href: "/profile", icon: "/images/navbar/settings.svg", selectedIcon: "/images/navbar/settings_selected.svg" },
-    { name: "Log Out", href: "/", icon: "/images/navbar/logout.svg", selectedIcon: "/images/navbar/schedule_selected.svg" },
+    { name: "Log Out", href: "/", icon: "/images/navbar/logout.svg", selectedIcon: "/images/navbar/logout_selected.svg" },
 ];
 
 
@@ -152,14 +155,29 @@ export default function NewNavbar({ show, setter }: any) {
                                         onClick={() => handleInitialMenuItemClick(index)}
                                     >
                                         <div className="flex items-center justify-start mt-6">
-                                            <Image
-                                                src={selectedPathName === item.href ? item.selectedIcon : item.icon}
-                                                width={20}
-                                                height={20}
-                                                alt="sideBar"
-                                                style={{ objectFit: "contain" }}
-                                                quality={75}
-                                            />
+                                            {
+                                                selectedPathName === item.href ?
+                                                    <div className="w-[28px] h-[28px] rounded-[4px] flex justify-center items-center bg-[#f2cd00]">
+                                                        <Image
+                                                            src={selectedPathName === item.href ? item.selectedIcon : item.icon}
+                                                            width={20}
+                                                            height={20}
+                                                            alt="sideBar"
+                                                            style={{ objectFit: "contain" }}
+                                                            quality={75}
+                                                        />
+                                                    </div>
+                                                    :
+                                                    <Image
+                                                        src={selectedPathName === item.href ? item.selectedIcon : item.icon}
+                                                        width={20}
+                                                        height={20}
+                                                        alt="sideBar"
+                                                        style={{ objectFit: "contain" }}
+                                                        quality={75}
+                                                    />
+                                            }
+
                                             <span className={`ml-[12px] text-[14px] ${selectedPathName === item.href ? 'font-bold text-[#f2cd00]' : 'font-normal text-white'}`}>{item.name}</span>
 
 

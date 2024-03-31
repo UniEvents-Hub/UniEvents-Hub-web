@@ -1,0 +1,127 @@
+'use client';
+
+import { useRouter } from 'next/navigation'
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { AppDispatch, useAppSelector } from "@/app/redux/store";
+import ShareModal from "./share-modal"
+import Image from 'next/image'
+
+
+
+export default function OrgEventCard({ label }: any) {
+    const router = useRouter();
+    const [isShareModalShow, setIsShareModalShow] = useState(false);
+    const [events, setEvents] = useState<any[]>([,
+        { id: 0, name: 'U of A Forestry Graduation Night', slug: 'all', selected: false, image: "/images/event_banner.jpeg" },
+        { id: 1, name: 'CSC Edmonton Presents', slug: 'today', selected: false, image: "/images/csc_event.jpeg" },
+        { id: 2, name: 'Albertas Battle', slug: 'tomorrow', selected: false, image: "/images/battle_event.jpeg" },
+    ]);
+    const dispatch = useDispatch<AppDispatch>();
+
+    useEffect(() => {
+        // getcagoryData()
+
+    }, []);
+
+    const getcagoryData = async () => {
+        // const categoryData = await getCategories();
+        // setEvents(categoryData);
+    }
+
+    const handleCategorySelected = (category: any, index: number) => {
+        // if (category) {
+        //     // dispatch(setSelectedTag(category.slug))
+        //     var newState: any[] = []
+        //     // set the selected property to false for all categories
+        //     categories.forEach((item: any) => {
+        //         newState.push({ ...item, selected: false })
+        //     })
+        //     // set the selected property to true for the selected category
+        //     newState[index] = { ...category, selected: true }
+        //     // setSelectedTags(selectTags)
+        //     setCategories(newState)
+        // }
+    }
+
+    const goToDetails = (event: any) => {
+        router.push('/myevent/dashboard?id=1231adsad')
+    }
+
+    return (
+        <div>
+            {
+                events && events.length ?
+                    <>
+
+                        <div className="grid mb-10">
+                            <div
+                                className="flex flex-wrap gap-6"
+                            >
+                                {events.map((event: any, index: any) => (
+                                    <div key={index} onClick={() => goToDetails(event)} className=" w-full cursor-pointer flex flex-row justify-between bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                                        {/* <a href="#">
+                                            <img
+                                                className="rounded-t-lg w-[312px] h-[150px]"
+                                                src={event.image} alt="" />
+                                        </a> */}
+                                        <div className="w-[60%] flex md:flex-row flex-col">
+                                            <img
+                                                onClick={() => goToDetails(event)}
+                                                className="w-[112px] h-[112px] rounded-[6px] object-cover"
+                                                src={event.image} alt="" />
+                                            <div className='md:w-[70%] w-[100%] ml-6 mt-4'>
+                                                <a onClick={() => goToDetails(event)}>
+                                                    <h1 className="w-[90%] mb-2 text-[14px] font-bold tracking-tight text-gray-900 dark:text-white">{event.name}</h1>
+                                                </a>
+                                                <div className="flex items-center justify-start mt-2  cursor-pointer hover:underline">
+                                                    <img
+                                                        src="/images/calender_icon.svg"
+                                                        alt="Description of your image"
+                                                        className="w-[20px] h-[20px] object-stretch" />
+                                                    <p className="mb-[2px] ml-2 text-[14px] font-normal text-red-500 dark:text-gray-400">Tuesday, Mar 12, 1:00 PM</p>
+                                                </div>
+
+                                                <div className="flex items-center justify-start mt-2  cursor-pointer hover:underline">
+                                                    <img
+                                                        src="/images/location_icon.svg"
+                                                        alt="Description of your image"
+                                                        className="w-[20px] h-[20px] object-stretch" />
+                                                    <p className="ml-2 text-[14px] font-normal text-black dark:text-gray-400">Universirty Of Alberta</p>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                        <div className="w-[40%] flex md:flex-row flex-col justify-start items-start mt-4 gap-10">
+                                            <div className='flex flex-col items-start ml-[14px]'>
+                                                <span className="text-[16px] text-bold text-black">Sold</span>
+                                                <span className="text-[12px] mt-2">1/10</span>
+                                            </div>
+                                            <div className='flex flex-col items-start ml-[14px]'>
+                                                <span className="text-[16px] text-bold text-black">Gross</span>
+                                                <span className="text-[12px] mt-2">CA$10.00</span>
+                                            </div>
+                                            <div className='flex flex-col items-start ml-[14px]'>
+                                                <span className="text-[16px] text-bold text-black">Status</span>
+                                                <span className="text-[12px] mt-2">On Sale</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                        </div>
+                    </> : <div>
+
+                    </div>
+            }
+            {
+                isShareModalShow ?
+                    <ShareModal
+                        onClose={() => setIsShareModalShow(false)} /> : null
+            }
+        </div>
+    );
+}
