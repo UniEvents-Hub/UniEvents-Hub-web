@@ -38,16 +38,17 @@ export default function UpcomingList({ label }: any) {
 
     const handleCategorySelected = (category: any, index: number) => {
         if (category) {
-            // dispatch(setSelectedTag(category.slug))
-            var newState: any[] = []
-            // set the selected property to false for all categories
-            categories.forEach((item: any) => {
-                newState.push({ ...item, selected: false })
+            const updatedCategories = categories.map((obj) => {
+                if (category.id === obj.id) {
+                    obj.selected = true
+                }
+                else {
+                    obj.selected = false
+                }
+                return obj;
             })
-            // set the selected property to true for the selected category
-            newState[index] = { ...category, selected: true }
-            // setSelectedTags(selectTags)
-            setCategories(newState)
+            setCategories(updatedCategories)
+
         }
     }
 

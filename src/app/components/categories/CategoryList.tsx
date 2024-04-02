@@ -8,17 +8,17 @@ import Image from 'next/image'
 
 
 
-export default function CategoryList({ label }: any) {
+export default function CategoryList({ label, getCategoryInfo }: any) {
     const router = useRouter();
     const [categories, setCategories] = useState<any[]>([,
-        { id: 0, name: 'All', slug: 'all', selected: true },
-        { id: 1, name: 'Film', slug: 'film', selected: false },
-        { id: 2, name: 'Tech', slug: 'tech', selected: false },
-        { id: 3, name: 'Gaming', slug: 'gaming', selected: false },
-        { id: 4, name: 'Culture', slug: 'culture', selected: false },
-        { id: 5, name: 'Music', slug: 'music', selected: false },
+        { id: 1, name: 'All', slug: 'all', selected: true },
+        { id: 2, name: 'Film', slug: 'film', selected: false },
+        { id: 3, name: 'Tech', slug: 'tech', selected: false },
+        { id: 4, name: 'Gaming', slug: 'gaming', selected: false },
+        { id: 5, name: 'Culture', slug: 'culture', selected: false },
+        { id: 6, name: 'Music', slug: 'music', selected: false },
         // { id: 5, name: 'Food & Drink', slug: 'music', selected: false },
-        { id: 6, name: 'Health', slug: 'health', selected: false },
+        { id: 7, name: 'Health', slug: 'health', selected: false },
         // { id: 7, name: 'Business', slug: 'music', selected: false }
     ]);
     const dispatch = useDispatch<AppDispatch>();
@@ -40,15 +40,18 @@ export default function CategoryList({ label }: any) {
     const handleCategorySelected = (category: any, index: number) => {
         if (category) {
             // dispatch(setSelectedTag(category.slug))
-            var newState: any[] = []
-            // set the selected property to false for all categories
-            categories.forEach((item: any) => {
-                newState.push({ ...item, selected: false })
+            const updatedCategories = categories.map((obj) => {
+                if (category.id === obj.id) {
+                    obj.selected = true
+                }
+                else {
+                    obj.selected = false
+                }
+                return obj;
             })
-            // set the selected property to true for the selected category
-            newState[index] = { ...category, selected: true }
-            // setSelectedTags(selectTags)
-            setCategories(newState)
+            setCategories(updatedCategories)
+
+            getCategoryInfo(category)
         }
     }
 

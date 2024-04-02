@@ -8,6 +8,8 @@ import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/app/redux/store";
 import { setToken } from "@/app/redux/features/app-slice";
 import Image from "next/image";
+import { doUpdateUser } from '@/app/services/User/user-service';
+import { TokenConstants } from '../utils/constants';
 
 
 export default function UserInterest() {
@@ -49,6 +51,7 @@ export default function UserInterest() {
     }
 
     const updateUserInfo = async () => {
+        console.log('asdas')
         if (selectedIndex <= userSignUpFormSteps.length - 1) {
             if (selectedIndex < userSignUpFormSteps.length - 1) {
                 setSelectedIndex(selectedIndex + 1)
@@ -57,8 +60,38 @@ export default function UserInterest() {
 
             let formOutput = childRef.current.getStepFormData();
             let payload = preparePayload(formOutput) as any;
-            dispatch(setToken("asdasdsads"));
-            localStorage.setItem("accessToken", "asdasdsads")
+
+            let params = {
+                interests: payload?.tags
+            };
+            console.log('params', params)
+            let user_id = localStorage.getItem(TokenConstants.USER_INFO)
+            doUpdateUser(
+                user_id,
+                params,
+                (success: any) => {
+                    console.log('doUpdateUser success', success);
+
+                    if (success) {
+
+                        const access_token = localStorage.getItem(TokenConstants.ACCESS_TOKEN);
+
+                        if (access_token) {
+                            console.log(TokenConstants.ACCESS_TOKEN, access_token);
+                            // dispatch(setToken(access_token));
+                        } else {
+
+                        }
+                    }
+                },
+                (error: any) => {
+                    console.log('login error', error);
+                },
+            );
+
+
+            // dispatch(setToken("asdasdsads"));
+            // localStorage.setItem("accessToken", "asdasdsads")
 
             //   const result = await updateUser(payload);
             //   if (result && userData?.uid) {

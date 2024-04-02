@@ -11,6 +11,7 @@ import { getIntialials } from '@/app/utils/utility-function';
 import { AppDispatch } from "@/app/redux/store";
 import { useDispatch } from "react-redux";
 import { setToken, logOut } from "@/app/redux/features/app-slice";
+import { TokenConstants } from "@/app/utils/constants";
 
 import * as _ from 'lodash';
 
@@ -100,7 +101,7 @@ export default function NewNavbar({ show, setter }: any) {
         if (selectedMenuItem.href) {
             if (selectedMenuItem.href === "/") {
                 dispatch(setToken(""));
-                localStorage.removeItem("accessToken")
+                localStorage.removeItem(TokenConstants.ACCESS_TOKEN)
                 dispatch(logOut());
                 router.push("/")
             }
@@ -127,7 +128,7 @@ export default function NewNavbar({ show, setter }: any) {
         <>
             {Loading.isLoading && <Loader message={Loading.message} />}
 
-            {accessToken && (
+            {!accessToken && (
                 <div
                     id="default-sidebar"
                     className={`${containerClassName}${appendClass} bg-[#275d38] default-sideBar fixed`}

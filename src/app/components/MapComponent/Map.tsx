@@ -15,8 +15,8 @@ function ChangeView({ center, zoom }: any) {
     return null;
 }
 
-const MapView = () => {
-    const [position, setPosition] = useState([53.5344, -113.45326])
+const MapView = ({ latitude = -113.521, longitude = 53.5213 }) => {
+    const [position, setPosition] = useState([longitude, latitude])
     const [activePark, setActivePark] = useState(null);
     // [53.526822, -113.4909855]
 

@@ -1,6 +1,8 @@
 export const TokenConstants = {
     ACCESSIBLES: 'accessibles', 
     ACCESS_TOKEN: 'access-token',
+    USER_ID: 'user_id',
+    USER_INFO: 'user-info',
     SESSION_EXPIRED: 'session_expired',
   
     REFRESH_TOKEN: 'refresh_token',

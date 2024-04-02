@@ -12,6 +12,9 @@ import {
     validatePhoneNumber,
 } from "@/app/utils/utility-function";
 import { signInWithGoogle } from "@/app/utils/auth";
+import { doLogin } from '@/app/services/Auth/auth-service';
+import { TokenConstants } from '../utils/constants';
+import { jwtDecode } from "jwt-decode";
 import Success from "../success/page";
 
 type FormType = {
@@ -93,8 +96,40 @@ export default function Login(props: any) {
             return;
         }
         else {
-            dispatch(setToken("asdasdsads"));
-            localStorage.setItem("accessToken", "asdasdsads")
+            let params = {
+                username: "Atley",
+                password: object?.password,
+            };
+
+            doLogin(
+                params,
+                (success: any) => {
+                    console.log('login success', success);
+
+                    if (success) {
+
+                        const access_token = success?.data?.access;
+                        const refresh_token = success?.data?.refresh;
+
+                        if (access_token) {
+                            const decoded = jwtDecode(access_token);
+                            console.log(decoded);
+                            if (decoded) {
+                                const user_id = decoded?.user_id;
+                                localStorage.setItem(TokenConstants.USER_INFO, user_id)
+                            }
+                            console.log(TokenConstants.ACCESS_TOKEN, access_token);
+                            dispatch(setToken(access_token));
+                            localStorage.setItem(TokenConstants.ACCESS_TOKEN, access_token)
+                        } else {
+
+                        }
+                    }
+                },
+                (error: any) => {
+                    console.log('login error', error);
+                },
+            );
         }
     }
 

@@ -5,14 +5,15 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/app/redux/store";
 import ShareModal from "./share-modal"
-import Image from 'next/image'
+import Image from 'next/image';
+import Urls from '@/app/Networking/urls';
 
 
 
-export default function OrgEventCard({ label }: any) {
+export default function OrgEventCard({ label, events }: any) {
     const router = useRouter();
     const [isShareModalShow, setIsShareModalShow] = useState(false);
-    const [events, setEvents] = useState<any[]>([,
+    const [localEvents, setLocalEvents] = useState<any[]>([,
         { id: 0, name: 'U of A Forestry Graduation Night', slug: 'all', selected: false, image: "/images/event_banner.jpeg" },
         { id: 1, name: 'CSC Edmonton Presents', slug: 'today', selected: false, image: "/images/csc_event.jpeg" },
         { id: 2, name: 'Albertas Battle', slug: 'tomorrow', selected: false, image: "/images/battle_event.jpeg" },
@@ -45,7 +46,10 @@ export default function OrgEventCard({ label }: any) {
     }
 
     const goToDetails = (event: any) => {
-        router.push('/myevent/dashboard?id=1231adsad')
+        if (event) {
+            router.push(`/myevent/dashboard?eventId=${event?.id}`)
+        }
+
     }
 
     return (
@@ -69,17 +73,17 @@ export default function OrgEventCard({ label }: any) {
                                             <img
                                                 onClick={() => goToDetails(event)}
                                                 className="w-[112px] h-[112px] rounded-[6px] object-cover"
-                                                src={event.image} alt="" />
+                                                src={event.banner ? `${Urls.BASE_URL}${event.banner}` : '/images/event_banner.jpeg'} alt="" />
                                             <div className='md:w-[70%] w-[100%] ml-6 mt-4'>
                                                 <a onClick={() => goToDetails(event)}>
-                                                    <h1 className="w-[90%] mb-2 text-[14px] font-bold tracking-tight text-gray-900 dark:text-white">{event.name}</h1>
+                                                    <h1 className="w-[90%] mb-2 text-[14px] font-bold tracking-tight text-gray-900 dark:text-white">{event.title}</h1>
                                                 </a>
                                                 <div className="flex items-center justify-start mt-2  cursor-pointer hover:underline">
                                                     <img
                                                         src="/images/calender_icon.svg"
                                                         alt="Description of your image"
                                                         className="w-[20px] h-[20px] object-stretch" />
-                                                    <p className="mb-[2px] ml-2 text-[14px] font-normal text-red-500 dark:text-gray-400">Tuesday, Mar 12, 1:00 PM</p>
+                                                    <p className="mb-[2px] ml-2 text-[14px] font-normal text-red-500 dark:text-gray-400">{event?.date}, {event?.start_time}</p>
                                                 </div>
 
                                                 <div className="flex items-center justify-start mt-2  cursor-pointer hover:underline">
@@ -87,7 +91,7 @@ export default function OrgEventCard({ label }: any) {
                                                         src="/images/location_icon.svg"
                                                         alt="Description of your image"
                                                         className="w-[20px] h-[20px] object-stretch" />
-                                                    <p className="ml-2 text-[14px] font-normal text-black dark:text-gray-400">Universirty Of Alberta</p>
+                                                    <p className="ml-2 text-[14px] font-normal text-black dark:text-gray-400">{event?.address}</p>
                                                 </div>
                                             </div>
 

@@ -8,7 +8,7 @@ import Image from 'next/image'
 
 
 
-export default function TagList({ label }: any) {
+export default function TagList({ label, getCategoryInfo, createdcategory }: any) {
     const router = useRouter();
     const [categories, setCategories] = useState<any[]>([,
         { id: 1, name: 'All', slug: 'all', selected: true },
@@ -25,14 +25,22 @@ export default function TagList({ label }: any) {
 
     useEffect(() => {
         getcagoryData()
-    }, []);
+    }, [createdcategory]);
 
     const getcagoryData = async () => {
         // const categoryData = await getCategories();
         setCategories(categories);
+        const selectedTag = categories.find(category => {
+            if (category) {
+                return category?.slug === createdcategory
+            }
+        });
+        if (selectedTag) {
+            handleCategorySelected(selectedTag)
+        }
     }
 
-    const handleCategorySelected = (category: any, index: number) => {
+    const handleCategorySelected = (category: any) => {
         if (category) {
             if (categories && categories.length > 0) {
                 const updatedCategories = categories.map((obj) => {
@@ -46,6 +54,7 @@ export default function TagList({ label }: any) {
                     return obj;
                 })
                 setCategories(updatedCategories)
+                getCategoryInfo(category)
             }
 
         }
@@ -63,7 +72,7 @@ export default function TagList({ label }: any) {
                             >
                                 {categories.map((item: any, index: any) => (
                                     <div
-                                        onClick={() => handleCategorySelected(item, index)}
+                                        onClick={() => handleCategorySelected(item)}
                                         key={index}
                                         className={`h-[35px] rounded-full px-[20px] flex items-center justify-center hover:bg-blue cursor-pointer ${item.selected ? 'bg-[#333E48] border border-[#616161]' : 'border border-[#616161]'
                                             }`}

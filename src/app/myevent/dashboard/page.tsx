@@ -10,15 +10,50 @@ import {
     LinkedinShareButton,
     LinkedinIcon,
 } from 'next-share';
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getEvents, getEventDetails } from '@/app/services/Event/event-service';
 
 function EventDashboardPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+
     const [backgroundGradiant, setBackgroundGradient] = useState<string>("tech-gradient-background");
     const [isCopied, setIsCopied] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const [dropData, setDropData] = useState([{ id: 0, name: 'On Sale', selected: false }, { id: 1, name: 'Sold out', selected: false }, { id: 2, name: 'Cancelled', selected: false }, { id: 3, name: 'Publish event', selected: false }, { id: 4, name: 'Unpublish event', selected: false }, { id: 5, name: 'Draft event', selected: false }])
-    const [filterType, setFilterType] = useState('On Sale')
+    const [filterType, setFilterType] = useState('On Sale');
+    const [loading, setLoading] = useState<boolean>(true);
+    const [eventDetails, setEventDetails] = useState<any>(null);
+
+    useEffect(() => {
+        const evet_id = searchParams?.get("eventId");
+        getEventInfo(evet_id)
+    }, []);
+
+    const getEventInfo = (id: any) => {
+
+        getEventDetails(
+            id,
+            (success: any) => {
+                console.log('getEventDetails success', success);
+
+                if (success && success.data.length > 0) {
+                    setEventDetails(success.data[0]);
+                    // setTicketCount(success.data[0].total_tickets); 
+                }
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000)
+            },
+            (error: any) => {
+                console.log('login error', error);
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000)
+            },
+        );
+
+    }
 
     const handleDropDown = (item: any) => {
         setShowMenu(false)
@@ -38,8 +73,16 @@ function EventDashboardPage() {
         }
     }
 
+    const doEditEvent = () => {
+        router.push(`/createEvent?eventId=${eventDetails?.id}`);
+        // router.push('/createEvent')
+    }
+
     const goToDetails = () => {
-        router.push('/eventDetails?eventId=1213adas')
+        if (eventDetails) {
+            router.push(`/eventDetails?eventId=${eventDetails.id}`)
+        }
+
     }
 
     return (
@@ -84,12 +127,16 @@ function EventDashboardPage() {
                     </div>
 
 
-                    <h1 className="mb-2 mt-4 text-[20px] font-bold tracking-tight text-gray-900 dark:text-white">AI Research conference 2024</h1>
+                    <h1 className="mb-2 mt-4 text-[20px] font-bold tracking-tight text-gray-900 dark:text-white">{eventDetails?.title}</h1>
 
-                    <p className="mb-[6px] text-[16px] font-normal text-red-500 dark:text-gray-400">Tuesday, Mar 12, 1:00 PM</p>
-                    <p className="mb-3 text-[16px] font-normal text-gray-700 dark:text-gray-400">Universirty Of Alberta</p>
+                    <p className="mb-[6px] text-[16px] font-normal text-red-500 dark:text-gray-400">{eventDetails?.date}, {eventDetails?.start_time}</p>
+                    <p className="mb-3 text-[16px] font-normal text-gray-700 dark:text-gray-400">{eventDetails?.address}</p>
 
-                    <span onClick={() => goToDetails()} className="text-blue-600 cursor-pointer hover:underline">View your event</span>
+                    <div className="flex flex-col gap-4">
+                        <span onClick={() => doEditEvent()} className="text-blue-600 cursor-pointer hover:underline">Edit your event</span>
+
+                        <span onClick={() => goToDetails()} className="text-blue-600 cursor-pointer hover:underline">View your event</span>
+                    </div>
 
                 </div>
 

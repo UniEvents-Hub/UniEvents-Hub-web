@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import Sidebar from './SideBar';
 import MenuBarMobile from './MenuBarMobile';
 import { useAppSelector } from "@/app/redux/store";
+import { TokenConstants } from '@/app/utils/constants';
 
 export default function NavBarLayout({ pageTitle, children }: any) {
     // Mobile sidebar visibility state
@@ -13,7 +14,7 @@ export default function NavBarLayout({ pageTitle, children }: any) {
 
     useEffect(() => {
         console.log('accessToken', accessToken)
-        let token = localStorage.getItem("accessToken");
+        let token = localStorage.getItem(TokenConstants.ACCESS_TOKEN);
         if (token) {
             setAccessToken(token);
 

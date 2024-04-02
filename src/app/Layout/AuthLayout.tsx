@@ -8,6 +8,9 @@ import Signup from "../Auth/Signup";
 import Login from '../Auth/Login';
 import UserInterest from "../Auth/UserInterest";
 import Loader from '@/app/components/Loader';
+import { TokenConstants } from '@/app/utils/constants';
+import { getUserInfo } from '@/app/services/User/user-service';
+
 
 export default function AuthLayout({
     children,
@@ -18,7 +21,7 @@ export default function AuthLayout({
     const [isSignup, setIsSignup] = useState(false);
     const [isSignupCompleted, setIsSignupCompleted] = useState(false);
     const [isProfileCompleted, setIsProfileCompleted] = useState<boolean>(false);
-    const [accessToken, setAccessToken] = useState<string>("")
+    const [accessToken, setAccessToken] = useState<any>(null)
     const [loading, setLoading] = useState<boolean>(true);
 
     const storeToken = useAppSelector((state) => state.appReducer.accessToken);
@@ -28,20 +31,46 @@ export default function AuthLayout({
 
 
     useEffect(() => {
-        console.log('accessToken', accessToken)
-        let token = localStorage.getItem("accessToken");
+        // console.log('accessToken', accessToken)
+        let token = localStorage.getItem(TokenConstants.ACCESS_TOKEN);
+        console.log('layout token', token);
+        setAccessToken(token);
         if (token) {
-            setAccessToken(token);
-
+            getUserData()
         }
         setTimeout(() => {
             setLoading(false)
-        }, 3000)
+        }, 2000)
 
         if (userData) {
             setIsProfileCompleted(checkIfProfileCompleted(userData));
         }
     }, [storeToken]);
+
+    const getUserData = () => {
+        let user_id = localStorage.getItem(TokenConstants.USER_INFO);
+        if (user_id) {
+            getUserInfo(
+                user_id,
+                (success: any) => {
+                    console.log('getUserInfo success', success);
+
+                    if (success) {
+
+                        // if (access_token) { 
+                        //     dispatch(setToken(access_token));
+                        //     localStorage.setItem(TokenConstants.ACCESS_TOKEN, access_token)
+                        // } else {
+
+                        // }
+                    }
+                },
+                (error: any) => {
+                    console.log('login error', error);
+                },
+            );
+        }
+    }
 
     const checkIfProfileCompleted = (user: any) => {
         return (

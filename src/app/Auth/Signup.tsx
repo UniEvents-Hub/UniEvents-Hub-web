@@ -12,6 +12,9 @@ import { AppDispatch } from "@/app/redux/store";
 import { useDispatch } from "react-redux";
 import { setToken } from "@/app/redux/features/app-slice";
 import UserInterest from "../Auth/UserInterest";
+import { doSignUp } from '@/app/services/Auth/auth-service';
+import { TokenConstants } from '../utils/constants';
+import { jwtDecode } from "jwt-decode";
 
 
 type FormType = {
@@ -136,7 +139,56 @@ export default function Signup(props: any) {
         }
         else {
             // dispatch(setToken("asdasdsads"));
-            setIsSignupCompleted(true)
+            let params = {
+                username: "Atley2",
+                password: object?.password,
+                email: object?.email,
+                first_name: object?.firstName,
+                last_name: object?.lastName
+            };
+
+            doSignUp(
+                params,
+                (success: any) => {
+                    console.log('doSignUp success', success);
+
+                    if (success) {
+
+                        const access_token = success?.data?.access;
+                        const refresh_token = success?.data?.refresh;
+
+                        if (access_token) {
+                            const decoded = jwtDecode(access_token);
+                            console.log(decoded);
+                            if (decoded) {
+                                const user_id = decoded?.user_id;
+                                localStorage.setItem(TokenConstants.USER_INFO, user_id)
+                                if (access_token && user_id) {
+                                    setIsSignupCompleted(true)
+                                    localStorage.setItem(TokenConstants.ACCESS_TOKEN, access_token)
+                                }
+                            }
+                            console.log(TokenConstants.ACCESS_TOKEN, access_token);
+                            // dispatch(setToken(access_token));
+
+                        } else {
+
+                        }
+                    }
+                },
+                (error: any) => {
+                    console.log('login error', error);
+                    if (error && error.data) {
+                        let errmsg = Object.values(error.data)[0] as any;
+                        console.log(errmsg)
+                        if (errmsg && errmsg.length > 0) {
+                            alert(errmsg[0])
+                        }
+                    }
+                },
+            );
+
+
         }
     }
 
