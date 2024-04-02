@@ -20,6 +20,7 @@ function EventDetailsPage() {
     const [isShareModalShow, setIsShareModalShow] = useState(false);
     const [loading, setLoading] = useState<boolean>(true);
     const [eventDetails, setEventDetails] = useState<any>(null);
+    const [shareLink, setShareLink] = useState<any>('')
     const searchParams = useSearchParams();
 
     useEffect(() => {
@@ -38,6 +39,8 @@ function EventDetailsPage() {
                     setEventDetails(success.data[0]);
                     // setTicketCount(success.data[0].total_tickets);
                     setTicketPrice(Number(success.data[0].ticket_price))
+                    let link = `${window.location.origin}/eventDetails?eventId=${success.data[0].id}`
+                    setShareLink(link)
                 }
                 setTimeout(() => {
                     setLoading(false);
@@ -174,6 +177,7 @@ function EventDetailsPage() {
                         {
                             isShareModalShow ?
                                 <ShareModal
+                                    shareLink={shareLink}
                                     onClose={() => setIsShareModalShow(false)} /> : null
                         }
                     </> : null

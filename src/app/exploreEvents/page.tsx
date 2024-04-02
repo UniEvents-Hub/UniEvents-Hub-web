@@ -29,9 +29,11 @@ function DashboardPage() {
     const getAllEvents = () => {
         let user_id = localStorage.getItem(TokenConstants.USER_INFO);
 
-        getEvents(
+        let event_type = 'all'
+        getFilteredEvents(
+            event_type,
             (success: any) => {
-                console.log('getEvents success', success);
+                console.log('getFilteredEvents success', success);
                 setTimeout(() => {
                     setLoading(false)
                 }, 2000)
@@ -41,12 +43,31 @@ function DashboardPage() {
                 }
             },
             (error: any) => {
-                console.log('login error', error);
+                console.log('getFilteredEvents error', error);
                 setTimeout(() => {
                     setLoading(false)
                 }, 2000)
             },
         );
+
+        // getEvents(
+        //     (success: any) => {
+        //         console.log('getEvents success', success);
+        //         setTimeout(() => {
+        //             setLoading(false)
+        //         }, 2000)
+        //         if (success) {
+        //             setAllEvents(success.data)
+        //             setFilteredEvents(success.data)
+        //         }
+        //     },
+        //     (error: any) => {
+        //         console.log('login error', error);
+        //         setTimeout(() => {
+        //             setLoading(false)
+        //         }, 2000)
+        //     },
+        // );
 
     }
 

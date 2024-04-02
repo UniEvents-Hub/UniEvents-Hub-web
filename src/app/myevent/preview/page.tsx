@@ -20,6 +20,7 @@ function EventPreviewPage() {
     const [ticketCount, setTicketCount] = useState(1)
     const [ticketPrice, setTicketPrice] = useState(10);
     const [eventDetails, setEventDetails] = useState<any>(null);
+    const [shareLink, setShareLink] = useState<any>('')
     const [isCheckoutModalShow, setIsCheckoutModalShow] = useState(false);
     const [isShareModalShow, setIsShareModalShow] = useState(false);
     const [loading, setLoading] = useState<boolean>(true);
@@ -41,6 +42,8 @@ function EventPreviewPage() {
                     setEventDetails(success.data[0]);
                     // setTicketCount(success.data[0].total_tickets);
                     setTicketPrice(Number(success.data[0].ticket_price))
+                    let link = `${window.location.origin}/eventDetails?eventId=${success.data[0].id}`
+                    setShareLink(link)
                 }
                 setTimeout(() => {
                     setLoading(false);
@@ -57,7 +60,6 @@ function EventPreviewPage() {
     }
 
     const handleUpdateEvent = () => {
-
         const params = {
             event_status: 'publish'
         };
@@ -74,9 +76,7 @@ function EventPreviewPage() {
                     console.log('doUpdateEvent success', success);
 
                     if (success && success.data) {
-                        setEventDetails(success.data);
-                        // setTicketCount(success.data[0].total_tickets);
-                        setTicketPrice(Number(success.data?.ticket_price))
+                        getEventInfo(success.data.id)
                         // router.push(`/myevent/preview?eventId=${success.data.id}`)
                         // router.push('/organizations/events')
                     }
@@ -220,7 +220,7 @@ function EventPreviewPage() {
                                 Edit event
                             </button>
                             {
-                                eventDetails && !eventDetails?.event_status === "publish" ?
+                                eventDetails && eventDetails?.event_status !== "publish" ?
                                     <button
                                         onClick={() => handleUpdateEvent()}
                                         className="bg-[#007a33] hover:bg-blue-600 text-[#f2cd00] font-bold py-2 px-4 rounded">
@@ -241,6 +241,7 @@ function EventPreviewPage() {
                         {
                             isShareModalShow ?
                                 <ShareModal
+                                    shareLink={shareLink}
                                     onClose={() => setIsShareModalShow(false)} /> : null
                         }
                     </>

@@ -18,12 +18,16 @@ import { provinceData } from '@/app/utils/provinceData'
 import { useDispatch } from "react-redux";
 import Select from "react-select";
 import * as _ from "lodash";
+import { doUpdateUser } from '@/app/services/User/user-service';
+import { TokenConstants } from '../utils/constants';
 
 type FormType = {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber: string;
+    billing_address1: string;
+    billing_address2: string;
+    billing_city: string;
+    billing_province: string;
+    billing_zipcode: string;
+    billing_country: string;
 };
 
 export default function BillingAddress({ }) {
@@ -31,14 +35,16 @@ export default function BillingAddress({ }) {
     const authSelector = useAppSelector((store) => store.appReducer.auth);
     const formRef = useRef<HTMLFormElement>(null);
     const [countries, setCountries] = useState([]);
-    const [selectedCountry, setSelectedCountry] = useState({});
+    const [selectedCountry, setSelectedCountry] = useState<any>({});
     const [provinces, setProvinces] = useState<any>([])
-    const [selectedProvince, setSelectedProvince] = useState({})
+    const [selectedProvince, setSelectedProvince] = useState<any>({})
     const [formData, setFormData] = useState<FormType>({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phoneNumber: "",
+        billing_address1: "",
+        billing_address2: "",
+        billing_city: "",
+        billing_province: "",
+        billing_zipcode: "",
+        billing_country: ""
     });
     const dispatch = useDispatch();
 
@@ -60,10 +66,12 @@ export default function BillingAddress({ }) {
         })
 
         setFormData({
-            firstName: userData?.firstName ?? "",
-            lastName: userData?.lastName ?? "",
-            email: userData?.email ?? "",
-            phoneNumber: userData?.phoneNumber ?? "",
+            billing_address1: userData?.profile?.billing_address1 ?? "",
+            billing_address2: userData?.profile?.billing_address2 ?? "",
+            billing_city: userData?.profile?.billing_city ?? "",
+            billing_province: userData?.profile?.billing_province ?? "",
+            billing_zipcode: userData?.profile?.billing_zipcode ?? "",
+            billing_country: userData?.profile?.billing_country ?? ""
         });
     }, [userData]);
 
@@ -85,14 +93,13 @@ export default function BillingAddress({ }) {
 
     const formSubmitAction = async (form: FormData) => {
         const object: FormType = {
-            firstName: getValueFromFormData(form, "firstName") ?? "",
-            lastName: getValueFromFormData(form, "lastName") ?? "",
-            email: getValueFromFormData(form, "email") ?? "",
+            billing_address1: getValueFromFormData(form, "billing_address1") ?? "",
+            billing_address2: getValueFromFormData(form, "billing_address2") ?? "",
+            billing_city: getValueFromFormData(form, "billing_city") ?? "",
+            billing_province: selectedCountry?.label ?? "",
+            billing_zipcode: getValueFromFormData(form, "billing_zipcode") ?? "",
+            billing_country: selectedProvince?.label ?? "",
 
-            // if phone number is empty then don't add + sign else add + sign
-            phoneNumber: isEmpty(formData.phoneNumber)
-                ? ""
-                : `+${formData.phoneNumber}`,
         };
 
         // if form is not valid then return
@@ -101,69 +108,52 @@ export default function BillingAddress({ }) {
             alert(error);
             return;
         }
-        if (!userData) return;
-        // dispatch(startLoader("Updating user data..."));
-        let user: User | undefined = _.cloneDeep<User>(userData);
-        if (!user) {
-            alert("User not updated!!! Try after sometime.");
-            //   dispatch(stopLoader());
-            return;
+        else {
+            let params = {
+                billing_address1: object?.billing_address1,
+                billing_address2: object?.billing_address2,
+                billing_city: object?.billing_city,
+                billing_province: object?.billing_province,
+                billing_zipcode: object?.billing_zipcode,
+                country: object?.billing_country
+            };
+            console.log('params', params)
+
+            let user_id = localStorage.getItem(TokenConstants.USER_INFO)
+            doUpdateUser(
+                user_id,
+                params,
+                (success: any) => {
+                    console.log('doUpdateUser success', success);
+
+                    if (success) {
+                    }
+                },
+                (error: any) => {
+                    console.log('login error', error);
+                },
+            );
         }
-        user.firstName = object.firstName;
-        user.lastName = object.lastName;
-        user = await updateAndRefreshUserData(user);
-
-
-        if (
-            validateEmail(object.email) &&
-            object.email != userData?.email &&
-            user
-        ) {
-            //   user = await updateUserEmail(user, object.email);
-        }
-
-        if (
-            validatePhoneNumber(object.phoneNumber) &&
-            object.phoneNumber != userData?.phoneNumber &&
-            user
-        ) {
-            //   user = await updateUserPhoneNumber(user, object.phoneNumber);
-        }
-    };
-
-    const updateUserEmail = async (user: User, newEmail: string) => {
-
-    };
-
-    const updateUserPhoneNumber = async (user: User, newPhoneNumber: string) => {
-
-    };
-
-    const updateAndRefreshUserData = async (user: User) => {
-        // await updateUser(user);
-        // dispatch(userDetails(user));
-        return user;
     };
 
     const isFormValid = (form: FormType): string | null => {
-        if (isEmpty(form.firstName)) {
-            return "First name is required";
+        if (isEmpty(form.billing_address1)) {
+            return "Address1 is required";
         }
-        if (isEmpty(form.lastName)) {
-            return "Last name is required";
+        if (isEmpty(form.billing_address2)) {
+            return "Address2 is required";
         }
-        if (isEmpty(form.email) && isEmpty(form.phoneNumber)) {
-            return "Either email or phone number is required";
+        if (isEmpty(form.billing_city)) {
+            return "City is required";
         }
-
-        // if email is not empty and not valid
-        if (!isEmpty(form.email) && !validateEmail(form.email)) {
-            return "Email is not valid";
+        if (isEmpty(form.billing_country)) {
+            return "Country is required";
         }
-
-        // if phone number is not empty and not valid
-        if (!isEmpty(form.phoneNumber) && !validatePhoneNumber(form.phoneNumber)) {
-            return "Phone number is not valid";
+        if (isEmpty(form.billing_province)) {
+            return "Province is required";
+        }
+        if (isEmpty(form.billing_zipcode)) {
+            return "Zipcode is required";
         }
         return null;
     };
@@ -186,13 +176,13 @@ export default function BillingAddress({ }) {
                                     <div className="grid grid-cols-6 md:gap-6 gap-4">
                                         <div className="md:col-span-6 col-span-6">
                                             <label className="text-sm font-medium text-gray-900 block mb-2">
-                                                Address
+                                                Billing Address1
                                             </label>
                                             <input
                                                 type="text"
-                                                name="firstName"
-                                                id="firstName"
-                                                value={formData.firstName}
+                                                name="billing_address1"
+                                                id="billing_address1"
+                                                value={formData.billing_address1}
                                                 onChange={handleFormChange}
                                                 className="shadow-sm md:bg-white-50 bg-[#F0F0F0] border border-gray-300 md:text-gray-900 text-[#616161] md:text-[13px] text-[13px] rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-3"
                                                 placeholder="Zendaya"
@@ -202,13 +192,13 @@ export default function BillingAddress({ }) {
 
                                         <div className="md:col-span-6 col-span-6 ">
                                             <label className="text-sm font-medium text-gray-900 block mb-2">
-                                                Address2
+                                                Billing Address2
                                             </label>
                                             <input
                                                 type="text"
-                                                name="lastName"
-                                                id="lastName"
-                                                value={formData.lastName}
+                                                name="billing_address2"
+                                                id="billing_address2"
+                                                value={formData.billing_address2}
                                                 onChange={handleFormChange}
                                                 className="shadow-sm md:bg-white-50 bg-[#F0F0F0] border border-gray-300 md:text-gray-900 text-[#616161] md:text-[13px] text-[13px] rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-3"
                                                 placeholder="Coleman"
@@ -218,13 +208,13 @@ export default function BillingAddress({ }) {
 
                                         <div className="md:col-span-6 col-span-6">
                                             <label className="text-sm font-medium text-gray-900 block mb-2">
-                                                City
+                                                Billing City
                                             </label>
                                             <input
                                                 type="text"
-                                                name="email"
-                                                id="email"
-                                                value={formData.email}
+                                                name="billing_city"
+                                                id="billing_city"
+                                                value={formData.billing_city}
                                                 onChange={handleFormChange}
                                                 className="shadow-sm md:bg-white-50 bg-[#F0F0F0] border border-gray-300 md:text-gray-900 text-[#616161] md:text-[13px] text-[13px] rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-3"
                                                 placeholder="Edmonton"
@@ -243,13 +233,13 @@ export default function BillingAddress({ }) {
                                         </div>
                                         <div className="md:col-span-3 col-span-6">
                                             <label className="text-sm font-medium text-gray-900 block mb-2">
-                                                Zip/Postal Code
+                                                Billing Zip/Postal Code
                                             </label>
                                             <input
                                                 type="text"
-                                                name="email"
-                                                id="email"
-                                                value={formData.email}
+                                                name="billing_zipcode"
+                                                id="billing_zipcode"
+                                                value={formData.billing_zipcode}
                                                 onChange={handleFormChange}
                                                 className="shadow-sm md:bg-white-50 bg-[#F0F0F0] border border-gray-300 md:text-gray-900 text-[#616161] md:text-[13px] text-[13px] rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-3"
                                                 placeholder="T6ETTT"

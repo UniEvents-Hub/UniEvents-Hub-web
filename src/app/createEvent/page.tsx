@@ -375,6 +375,7 @@ function CreateEventPage(props: any) {
             banner: image ? base64ToFile(image, filename) : '',
             event_type: selectedCategory,
             title: title,
+            event_status: 'draft',
             date: dayjs(startDate).format("YYYY-MM-DD"),
             start_time: formattedStartTime,
             end_time: formattedEndTime,

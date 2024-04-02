@@ -109,7 +109,7 @@ export const PATCH = async (url: any, params: any, success: any, error: any) => 
   try {
     let token = localStorage.getItem(TokenConstants.ACCESS_TOKEN);
     if(token) {
-    const response = await axios.patch(url, params, httpHelper.getHeader(token));
+    const response = await axios.patch(url, params, httpHelper.getMultiPartHeader(token));
     console.log('response', response)
     if (success) {
       success(await response);

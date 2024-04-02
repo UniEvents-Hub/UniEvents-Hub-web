@@ -5,7 +5,7 @@ const Urls = {
     BASE_URL: 'http://127.0.0.1:8000/',
   
     LOG_IN: 'login',
-    SIGN_UP: 'user/signup/',
+    SIGN_UP: 'signup/',
     GET_USER: 'api/userprofile',
     UPDATE_USER: 'api/updateuserprofile',
     GET_ALL_EVENTS: 'event/eventslist/',

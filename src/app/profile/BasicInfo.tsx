@@ -16,6 +16,8 @@ import PhoneInput from "react-phone-input-2";
 import 'react-phone-input-2/lib/style.css'
 import { useDispatch } from "react-redux";
 import * as _ from "lodash";
+import { doUpdateUser } from '@/app/services/User/user-service';
+import { TokenConstants } from '../utils/constants';
 
 type FormType = {
     firstName: string;
@@ -24,7 +26,7 @@ type FormType = {
     phoneNumber: string;
 };
 
-export default function BasicInfo({ }) {
+export default function BasicInfo({ userInfo }: any) {
     const userData = useAppSelector((store) => store.appReducer.userData);
     const authSelector = useAppSelector((store) => store.appReducer.auth);
     const formRef = useRef<HTMLFormElement>(null);
@@ -38,10 +40,10 @@ export default function BasicInfo({ }) {
 
     useEffect(() => {
         setFormData({
-            firstName: userData?.firstName ?? "",
-            lastName: userData?.lastName ?? "",
-            email: userData?.email ?? "",
-            phoneNumber: userData?.phoneNumber ?? "",
+            firstName: userData?.user?.first_name ?? "",
+            lastName: userData?.user?.last_name ?? "",
+            email: userData?.user?.email ?? "",
+            phoneNumber: userData?.profile?.phone_number ?? "",
         });
     }, [userData]);
 
@@ -79,33 +81,29 @@ export default function BasicInfo({ }) {
             alert(error);
             return;
         }
-        if (!userData) return;
-        // dispatch(startLoader("Updating user data..."));
-        let user: User | undefined = _.cloneDeep<User>(userData);
-        if (!user) {
-            alert("User not updated!!! Try after sometime.");
-            //   dispatch(stopLoader());
-            return;
-        }
-        user.firstName = object.firstName;
-        user.lastName = object.lastName;
-        user = await updateAndRefreshUserData(user);
 
+        else {
+            let params = {
+                phone_number: object?.phoneNumber,
+                email: object?.email,
+                first_name: object?.firstName,
+                last_name: object?.lastName
+            };
 
-        if (
-            validateEmail(object.email) &&
-            object.email != userData?.email &&
-            user
-        ) {
-            //   user = await updateUserEmail(user, object.email);
-        }
+            let user_id = localStorage.getItem(TokenConstants.USER_INFO)
+            doUpdateUser(
+                user_id,
+                params,
+                (success: any) => {
+                    console.log('doUpdateUser success', success);
 
-        if (
-            validatePhoneNumber(object.phoneNumber) &&
-            object.phoneNumber != userData?.phoneNumber &&
-            user
-        ) {
-            //   user = await updateUserPhoneNumber(user, object.phoneNumber);
+                    if (success) {
+                    }
+                },
+                (error: any) => {
+                    console.log('login error', error);
+                },
+            );
         }
     };
 
@@ -145,6 +143,13 @@ export default function BasicInfo({ }) {
         }
         return null;
     };
+
+    const updateUserInfo = async () => {
+
+
+
+    };
+
     const submitButtonClasses = `w-[170px] bg-red-500 text-white text-[14px] p-2 rounded-[10px] mb-6 hover:bg-white hover:text-black hover:border hover:border-gray-300`;
 
     return (

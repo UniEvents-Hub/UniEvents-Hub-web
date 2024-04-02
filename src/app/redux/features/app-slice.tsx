@@ -4,7 +4,7 @@ import { User } from "@/app/models/user";
 
 type InitialState = {
     auth: AuthState;
-    userData: User | undefined;
+    userData: any | undefined;
     accessToken: string;
     selectedRouteName: string;
     isAppInit: boolean;

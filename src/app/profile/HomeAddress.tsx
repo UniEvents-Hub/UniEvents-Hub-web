@@ -18,12 +18,16 @@ import { provinceData } from '@/app/utils/provinceData'
 import { useDispatch } from "react-redux";
 import Select from "react-select";
 import * as _ from "lodash";
+import { doUpdateUser } from '@/app/services/User/user-service';
+import { TokenConstants } from '../utils/constants';
 
 type FormType = {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber: string;
+    address1: string;
+    address2: string;
+    city: string;
+    country: string;
+    zipcode: string;
+    province: string;
 };
 
 export default function HomeAddress({ }) {
@@ -31,14 +35,16 @@ export default function HomeAddress({ }) {
     const authSelector = useAppSelector((store) => store.appReducer.auth);
     const formRef = useRef<HTMLFormElement>(null);
     const [countries, setCountries] = useState([]);
-    const [selectedCountry, setSelectedCountry] = useState({});
+    const [selectedCountry, setSelectedCountry] = useState<any>({});
     const [provinces, setProvinces] = useState<any>([])
-    const [selectedProvince, setSelectedProvince] = useState({})
+    const [selectedProvince, setSelectedProvince] = useState<any>({})
     const [formData, setFormData] = useState<FormType>({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phoneNumber: "",
+        address1: "",
+        address2: "",
+        city: "",
+        country: "",
+        zipcode: "",
+        province: ""
     });
     const dispatch = useDispatch();
 
@@ -60,10 +66,12 @@ export default function HomeAddress({ }) {
         })
 
         setFormData({
-            firstName: userData?.firstName ?? "",
-            lastName: userData?.lastName ?? "",
-            email: userData?.email ?? "",
-            phoneNumber: userData?.phoneNumber ?? "",
+            address1: userData?.profile?.address1 ?? "",
+            address2: userData?.profile?.address2 ?? "",
+            city: userData?.profile?.city ?? "",
+            country: userData?.profile?.country ?? "",
+            zipcode: userData?.profile?.zipcode ?? "",
+            province: userData?.profile?.province ?? ""
         });
     }, [userData]);
 
@@ -85,15 +93,15 @@ export default function HomeAddress({ }) {
 
     const formSubmitAction = async (form: FormData) => {
         const object: FormType = {
-            firstName: getValueFromFormData(form, "firstName") ?? "",
-            lastName: getValueFromFormData(form, "lastName") ?? "",
-            email: getValueFromFormData(form, "email") ?? "",
+            address1: getValueFromFormData(form, "address1") ?? "",
+            address2: getValueFromFormData(form, "address2") ?? "",
+            city: getValueFromFormData(form, "city") ?? "",
+            country: selectedCountry?.label ?? "",
+            zipcode: getValueFromFormData(form, "zipcode") ?? "",
+            province: selectedProvince?.label ?? "",
 
-            // if phone number is empty then don't add + sign else add + sign
-            phoneNumber: isEmpty(formData.phoneNumber)
-                ? ""
-                : `+${formData.phoneNumber}`,
         };
+        console.log('object', object)
 
         // if form is not valid then return
         const error = isFormValid(object);
@@ -101,33 +109,30 @@ export default function HomeAddress({ }) {
             alert(error);
             return;
         }
-        if (!userData) return;
-        // dispatch(startLoader("Updating user data..."));
-        let user: User | undefined = _.cloneDeep<User>(userData);
-        if (!user) {
-            alert("User not updated!!! Try after sometime.");
-            //   dispatch(stopLoader());
-            return;
-        }
-        user.firstName = object.firstName;
-        user.lastName = object.lastName;
-        user = await updateAndRefreshUserData(user);
+        else {
+            let params = {
+                address1: object?.address1,
+                address2: object?.address2,
+                city: object?.city,
+                country: object?.country,
+                zipcode: object?.zipcode,
+                province: object?.province
+            };
 
+            let user_id = localStorage.getItem(TokenConstants.USER_INFO)
+            doUpdateUser(
+                user_id,
+                params,
+                (success: any) => {
+                    console.log('doUpdateUser success', success);
 
-        if (
-            validateEmail(object.email) &&
-            object.email != userData?.email &&
-            user
-        ) {
-            //   user = await updateUserEmail(user, object.email);
-        }
-
-        if (
-            validatePhoneNumber(object.phoneNumber) &&
-            object.phoneNumber != userData?.phoneNumber &&
-            user
-        ) {
-            //   user = await updateUserPhoneNumber(user, object.phoneNumber);
+                    if (success) {
+                    }
+                },
+                (error: any) => {
+                    console.log('login error', error);
+                },
+            );
         }
     };
 
@@ -146,25 +151,25 @@ export default function HomeAddress({ }) {
     };
 
     const isFormValid = (form: FormType): string | null => {
-        if (isEmpty(form.firstName)) {
-            return "First name is required";
+        if (isEmpty(form.address1)) {
+            return "Address1 is required";
         }
-        if (isEmpty(form.lastName)) {
-            return "Last name is required";
+        if (isEmpty(form.address2)) {
+            return "Address2 is required";
         }
-        if (isEmpty(form.email) && isEmpty(form.phoneNumber)) {
-            return "Either email or phone number is required";
+        if (isEmpty(form.city)) {
+            return "City is required";
+        }
+        if (isEmpty(form.country)) {
+            return "Country is required";
+        }
+        if (isEmpty(form.province)) {
+            return "Province is required";
+        }
+        if (isEmpty(form.zipcode)) {
+            return "Zipcode is required";
         }
 
-        // if email is not empty and not valid
-        if (!isEmpty(form.email) && !validateEmail(form.email)) {
-            return "Email is not valid";
-        }
-
-        // if phone number is not empty and not valid
-        if (!isEmpty(form.phoneNumber) && !validatePhoneNumber(form.phoneNumber)) {
-            return "Phone number is not valid";
-        }
         return null;
     };
     const submitButtonClasses = `w-[170px] bg-red-500 text-white text-[14px] p-2 rounded-[10px] mb-6 hover:bg-white hover:text-black hover:border hover:border-gray-300`;
@@ -186,13 +191,13 @@ export default function HomeAddress({ }) {
                                     <div className="grid grid-cols-6 md:gap-6 gap-4">
                                         <div className="md:col-span-6 col-span-6">
                                             <label className="text-sm font-medium text-gray-900 block mb-2">
-                                                Address
+                                                Address1
                                             </label>
                                             <input
                                                 type="text"
-                                                name="firstName"
-                                                id="firstName"
-                                                value={formData.firstName}
+                                                name="address1"
+                                                id="address1"
+                                                value={formData.address1}
                                                 onChange={handleFormChange}
                                                 className="shadow-sm md:bg-white-50 bg-[#F0F0F0] border border-gray-300 md:text-gray-900 text-[#616161] md:text-[13px] text-[13px] rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-3"
                                                 placeholder="Zendaya"
@@ -206,9 +211,9 @@ export default function HomeAddress({ }) {
                                             </label>
                                             <input
                                                 type="text"
-                                                name="lastName"
-                                                id="lastName"
-                                                value={formData.lastName}
+                                                name="address2"
+                                                id="address2"
+                                                value={formData.address2}
                                                 onChange={handleFormChange}
                                                 className="shadow-sm md:bg-white-50 bg-[#F0F0F0] border border-gray-300 md:text-gray-900 text-[#616161] md:text-[13px] text-[13px] rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-3"
                                                 placeholder="Coleman"
@@ -222,9 +227,9 @@ export default function HomeAddress({ }) {
                                             </label>
                                             <input
                                                 type="text"
-                                                name="email"
-                                                id="email"
-                                                value={formData.email}
+                                                name="city"
+                                                id="city"
+                                                value={formData.city}
                                                 onChange={handleFormChange}
                                                 className="shadow-sm md:bg-white-50 bg-[#F0F0F0] border border-gray-300 md:text-gray-900 text-[#616161] md:text-[13px] text-[13px] rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-3"
                                                 placeholder="Edmonton"
@@ -247,9 +252,9 @@ export default function HomeAddress({ }) {
                                             </label>
                                             <input
                                                 type="text"
-                                                name="email"
-                                                id="email"
-                                                value={formData.email}
+                                                name="zipcode"
+                                                id="zipcode"
+                                                value={formData.zipcode}
                                                 onChange={handleFormChange}
                                                 className="shadow-sm md:bg-white-50 bg-[#F0F0F0] border border-gray-300 md:text-gray-900 text-[#616161] md:text-[13px] text-[13px] rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-3"
                                                 placeholder="T6ETTT"

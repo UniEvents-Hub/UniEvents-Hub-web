@@ -17,9 +17,10 @@ import {
 
 interface ShareModalProps {
     onClose: () => void;
+    shareLink: string;
 }
 
-const ShareModal: React.FC<ShareModalProps> = ({ onClose }) => {
+const ShareModal: React.FC<ShareModalProps> = ({ onClose, shareLink }) => {
     const [isCopied, setIsCopied] = useState(false);
 
     const handleClose = (e: any) => {
@@ -58,7 +59,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ onClose }) => {
 
                                 <div className="flex gap-6 mt-6">
                                     <FacebookShareButton
-                                        url={'https://github.com/next-share'}
+                                        url={shareLink}
                                         quote={'next-share is a social share buttons for your next React apps.'}
                                         hashtag={'#nextshare'} >
                                         <FacebookIcon size={32} round />
@@ -66,24 +67,24 @@ const ShareModal: React.FC<ShareModalProps> = ({ onClose }) => {
 
                                     <WhatsappShareButton
                                         /* Url you want to share */
-                                        url={'https://github.com/next-share'}
+                                        url={shareLink}
                                         title={'next-share is a social share buttons for your next React apps.'}
                                         separator=":: " >
                                         <WhatsappIcon size={32} round />
                                     </WhatsappShareButton>
                                     <LinkedinShareButton
-                                        url={'https://github.com/next-share'} >
+                                        url={shareLink} >
                                         <LinkedinIcon size={32} round />
                                     </LinkedinShareButton>
                                 </div>
 
                                 <div className="w-[50%] h-[48px] mt-10 rounded-[10px] flex items-center px-2 border border-[#616161]">
                                     <div className="w-[80%]  text-[14px]">
-                                        <p className="truncate text-[14px]">http://localhost:3000/eventDetails</p>
+                                        <p className="truncate text-[14px]">{shareLink}</p>
                                     </div>
                                     <button onClick={() => {
                                         setIsCopied(true)
-                                        navigator.clipboard.writeText('http://localhost:3000/eventDetails')
+                                        navigator.clipboard.writeText(shareLink)
                                     }}
                                         className="w-[20%] custom-button"
                                         title={isCopied ? 'copied' : 'copy'}>

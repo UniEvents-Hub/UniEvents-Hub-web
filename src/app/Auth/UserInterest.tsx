@@ -62,7 +62,7 @@ export default function UserInterest() {
             let payload = preparePayload(formOutput) as any;
 
             let params = {
-                interests: payload?.tags
+                interests: payload?.tags.toString()
             };
             console.log('params', params)
             let user_id = localStorage.getItem(TokenConstants.USER_INFO)
@@ -78,7 +78,7 @@ export default function UserInterest() {
 
                         if (access_token) {
                             console.log(TokenConstants.ACCESS_TOKEN, access_token);
-                            // dispatch(setToken(access_token));
+                            dispatch(setToken(access_token));
                         } else {
 
                         }

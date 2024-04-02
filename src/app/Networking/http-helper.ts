@@ -37,7 +37,7 @@ class HttpHelper {
     let headers = {
       Accept: 'application/json',
       Authorization: TokenConstants.HEADER_PARTIAL_VALUE + ' ' + token,
-      'Content-Type': 'application/octet-stream'
+      'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
     };
     let config = {
       headers: headers,

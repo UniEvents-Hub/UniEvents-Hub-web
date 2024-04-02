@@ -11,7 +11,7 @@ import {
     LinkedinIcon,
 } from 'next-share';
 import { useRouter, useSearchParams } from "next/navigation";
-import { getEvents, getEventDetails } from '@/app/services/Event/event-service';
+import { getEvents, getEventDetails, doUpdateEvent } from '@/app/services/Event/event-service';
 
 function EventDashboardPage() {
     const router = useRouter();
@@ -20,10 +20,11 @@ function EventDashboardPage() {
     const [backgroundGradiant, setBackgroundGradient] = useState<string>("tech-gradient-background");
     const [isCopied, setIsCopied] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
-    const [dropData, setDropData] = useState([{ id: 0, name: 'On Sale', selected: false }, { id: 1, name: 'Sold out', selected: false }, { id: 2, name: 'Cancelled', selected: false }, { id: 3, name: 'Publish event', selected: false }, { id: 4, name: 'Unpublish event', selected: false }, { id: 5, name: 'Draft event', selected: false }])
+    const [dropData, setDropData] = useState([{ id: 0, name: 'On Sale', slug: 'OnSale', selected: false }, { id: 1, name: 'Sold out', slug: 'SoldOut', selected: false }, { id: 2, name: 'Cancelled', slug: 'cancelled', selected: false }, { id: 3, name: 'Publish event', slug: 'publish', selected: false }, { id: 4, name: 'Unpublish event', slug: 'unpublish', selected: false }, { id: 5, name: 'Draft event', slug: 'draft', selected: false }])
     const [filterType, setFilterType] = useState('On Sale');
     const [loading, setLoading] = useState<boolean>(true);
     const [eventDetails, setEventDetails] = useState<any>(null);
+    const [shareLink, setShareLink] = useState<any>('')
 
     useEffect(() => {
         const evet_id = searchParams?.get("eventId");
@@ -40,6 +41,14 @@ function EventDashboardPage() {
                 if (success && success.data.length > 0) {
                     setEventDetails(success.data[0]);
                     // setTicketCount(success.data[0].total_tickets); 
+                    let link = `${window.location.origin}/eventDetails?eventId=${success.data[0].id}`
+                    setShareLink(link)
+                    if (success.data[0].event_status) {
+                        const savedStaus = dropData.find(type => type.slug === success.data[0].event_status);
+                        if (savedStaus) {
+                            handleDropDown(savedStaus)
+                        }
+                    }
                 }
                 setTimeout(() => {
                     setLoading(false);
@@ -55,6 +64,46 @@ function EventDashboardPage() {
 
     }
 
+    const handleUpdateEvent = (status: string) => {
+
+        const params = {
+            event_status: status
+        };
+        if (Object.keys(params).length === 0) {
+            alert('update some value')
+            return;
+        }
+        else {
+            // setLoading(true);
+            doUpdateEvent(
+                eventDetails.id,
+                params,
+                (success: any) => {
+                    console.log('doUpdateEvent success', success);
+
+                    if (success && success.data) {
+                        setEventDetails(success.data);
+                        alert('Event updated successfully!')
+                    }
+                    setTimeout(() => {
+                        setLoading(false);
+                    }, 2000)
+                },
+                (error: any) => {
+                    console.log('doUpdateEvent error', error);
+                    setLoading(false);
+                    if (error && error.data) {
+                        let errmsg = Object.values(error.data)[0] as any;
+                        console.log(errmsg)
+                        if (errmsg && errmsg.length > 0) {
+                            alert(errmsg[0])
+                        }
+                    }
+                },
+            );
+        }
+    }
+
     const handleDropDown = (item: any) => {
         setShowMenu(false)
         if (dropData && dropData.length > 0) {
@@ -63,6 +112,7 @@ function EventDashboardPage() {
                     obj.selected = true
                     console.log('obj', obj)
                     setFilterType(obj.name)
+                    handleUpdateEvent(obj.slug)
                 }
                 else {
                     obj.selected = false
@@ -164,7 +214,7 @@ function EventDashboardPage() {
                             <div className="w-[235px] h-[128px] bg-white rounded-[10px] flex flex-col justify-start items-start pl-4 pt-4">
 
                                 <span className="text-[20px] font-medium text-black">Status</span>
-                                <span className="text-[18px] mt-2">On Sale</span>
+                                <span className="text-[18px] mt-2">{eventDetails?.event_status}</span>
 
                             </div>
                         </div>
@@ -175,11 +225,11 @@ function EventDashboardPage() {
                             <div className="w-[50%] h-[48px] mt-0 rounded-[10px] flex items-center px-0">
 
                                 <div className="w-[60%]  text-[14px]">
-                                    <p className="truncate text-[14px]">http://localhost:3000/eventDetails</p>
+                                    <p className="truncate text-[14px]">{shareLink}</p>
                                 </div>
                                 <button onClick={() => {
                                     setIsCopied(true)
-                                    navigator.clipboard.writeText('http://localhost:3000/eventDetails')
+                                    navigator.clipboard.writeText(shareLink)
                                 }}
                                     className="w-[10%] custom-button"
                                     title={isCopied ? 'copied' : 'copy'}>
@@ -190,7 +240,7 @@ function EventDashboardPage() {
                             <span className="text-#1C1C1C text-[18px] text-bold text-left mb-2 mt-8">Social Share</span>
                             <div className="flex gap-6 mt-6">
                                 <FacebookShareButton
-                                    url={'https://github.com/next-share'}
+                                    url={shareLink}
                                     quote={'next-share is a social share buttons for your next React apps.'}
                                     hashtag={'#nextshare'} >
                                     <FacebookIcon size={32} round />
@@ -198,13 +248,13 @@ function EventDashboardPage() {
 
                                 <WhatsappShareButton
                                     /* Url you want to share */
-                                    url={'https://github.com/next-share'}
+                                    url={shareLink}
                                     title={'next-share is a social share buttons for your next React apps.'}
                                     separator=":: " >
                                     <WhatsappIcon size={32} round />
                                 </WhatsappShareButton>
                                 <LinkedinShareButton
-                                    url={'https://github.com/next-share'} >
+                                    url={shareLink} >
                                     <LinkedinIcon size={32} round />
                                 </LinkedinShareButton>
                             </div>

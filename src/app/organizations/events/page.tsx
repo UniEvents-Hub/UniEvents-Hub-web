@@ -14,11 +14,12 @@ import { getEvents, getOrgEvents } from '@/app/services/Event/event-service';
 function OrganizationEventPage() {
     const [backgroundGradiant, setBackgroundGradient] = useState<string>("tech-gradient-background");
     const [showMenu, setShowMenu] = useState(false);
-    const [dropData, setDropData] = useState([{ id: 0, name: 'Upcoming events', selected: false }, { id: 1, name: 'draft events', selected: false }, { id: 2, name: 'Past events', selected: false }, { id: 3, name: 'All events', selected: false }])
+    const [dropData, setDropData] = useState([{ id: 0, name: 'Upcoming events', slug: 'upcoming', selected: false }, { id: 1, name: 'draft events', slug: 'draft', selected: false }, { id: 2, name: 'Past events', slug: 'past', selected: false }, { id: 3, name: 'All events', slug: 'all', selected: false }])
     const [filterType, setFilterType] = useState('Upcoming events');
     const [loading, setLoading] = useState<boolean>(true);
     const [allEvents, setAllEvents] = useState([]);
     const [filteredEvents, setFilteredEvents] = useState([]);
+    const [searchInput, setSearchInput] = useState("");
     const router = useRouter();
 
     useEffect(() => {
@@ -61,6 +62,18 @@ function OrganizationEventPage() {
                     obj.selected = true
                     console.log('obj', obj)
                     setFilterType(obj.name)
+                    if (obj.slug === 'all') {
+                        setFilteredEvents(allEvents);
+                    }
+                    else {
+                        const eventFilteredData = allEvents.filter(event =>
+                            event?.event_status === obj.slug
+                        )
+                        setFilteredEvents(eventFilteredData);
+                    }
+
+
+
                 }
                 else {
                     obj.selected = false
@@ -70,6 +83,16 @@ function OrganizationEventPage() {
             setDropData(updatedTicketType)
         }
     }
+
+    const handleChange = (e: any) => {
+        const query = e.target.value.toLowerCase();
+        setSearchInput(query);
+        const eventFilteredData = allEvents.filter(event =>
+            event?.title.toLowerCase().includes(query)
+        );
+
+        setFilteredEvents(eventFilteredData);
+    };
 
     if (loading)
         return (
@@ -100,6 +123,8 @@ function OrganizationEventPage() {
                                         </svg>
                                     </div>
                                     <input type="search" id="default-search"
+                                        value={searchInput}
+                                        onChange={handleChange}
                                         className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                         placeholder="Search events" required />
 

@@ -140,7 +140,7 @@ export default function Signup(props: any) {
         else {
             // dispatch(setToken("asdasdsads"));
             let params = {
-                username: "Atley2",
+                username: object?.email,
                 password: object?.password,
                 email: object?.email,
                 first_name: object?.firstName,

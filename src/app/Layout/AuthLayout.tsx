@@ -10,6 +10,10 @@ import UserInterest from "../Auth/UserInterest";
 import Loader from '@/app/components/Loader';
 import { TokenConstants } from '@/app/utils/constants';
 import { getUserInfo } from '@/app/services/User/user-service';
+import {
+    userDetails,
+} from "@/app/redux/features/app-slice";
+import { useDispatch } from "react-redux";
 
 
 export default function AuthLayout({
@@ -26,6 +30,7 @@ export default function AuthLayout({
 
     const storeToken = useAppSelector((state) => state.appReducer.accessToken);
     const userData = useAppSelector((state) => state.appReducer.userData);
+    const dispatch = useDispatch();
 
     useEffect(() => { }, []);
 
@@ -56,13 +61,7 @@ export default function AuthLayout({
                     console.log('getUserInfo success', success);
 
                     if (success) {
-
-                        // if (access_token) { 
-                        //     dispatch(setToken(access_token));
-                        //     localStorage.setItem(TokenConstants.ACCESS_TOKEN, access_token)
-                        // } else {
-
-                        // }
+                        dispatch(userDetails(success.data));
                     }
                 },
                 (error: any) => {
