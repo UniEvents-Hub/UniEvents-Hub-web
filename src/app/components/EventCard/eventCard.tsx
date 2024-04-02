@@ -5,12 +5,13 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/app/redux/store";
 import Image from 'next/image'
+import Urls from '@/app/Networking/urls';
 
 
 
-export default function EventCard({ label }: any) {
+export default function EventCard({ label, events }: any) {
     const router = useRouter();
-    const [events, setEvents] = useState<any[]>([,
+    const [localevents, setEvents] = useState<any[]>([,
         { id: 0, name: 'U of A Forestry Graduation Night', slug: 'all', selected: false, image: "/images/event_banner.jpeg" },
         { id: 1, name: 'CSC Edmonton Presents:National Building Code Changes – 2023 Alberta Edition', slug: 'today', selected: false, image: "/images/csc_event.jpeg" },
         { id: 2, name: 'Albertas Battle Through Recovery - Edmonton', slug: 'tomorrow', selected: false, image: "/images/battle_event.jpeg" },
@@ -48,7 +49,9 @@ export default function EventCard({ label }: any) {
     }
 
     const goToDetails = (event: any) => {
-        router.push('/eventDetails')
+        if (event) {
+            router.push(`/eventDetails?eventId=${event?.id}`)
+        }
     }
 
     return (
@@ -66,18 +69,18 @@ export default function EventCard({ label }: any) {
                                         <a href="#">
                                             <img
                                                 className="rounded-t-lg w-[312px] h-[150px]"
-                                                src={event.image} alt="" />
+                                                src={event.banner ? `${Urls.BASE_URL}${event.banner}` : '/images/event_banner.jpeg'} alt="" />
                                         </a>
                                         <div className="p-5 h-[40%]">
                                             <a href="#">
-                                                <h5 className="mb-2 text-[16px] font-bold tracking-tight text-gray-900 dark:text-white">{event.name}</h5>
+                                                <h5 className="mb-2 text-[16px] font-bold tracking-tight text-gray-900 dark:text-white">{event.title}</h5>
                                             </a>
-                                            <p className="mb-[6px] text-[12px] font-normal text-gray-700 dark:text-gray-400">Tuesday, Mar 12, 1:00 PM</p>
-                                            <p className="mb-3 text-[12px] font-normal text-gray-700 dark:text-gray-400">Universirty Of Alberta</p>
+                                            <p className="mb-[6px] text-[12px] font-normal text-gray-700 dark:text-gray-400">{event?.date}, {event?.start_time}</p>
+                                            <p className="mb-3 text-[12px] font-normal text-gray-700 dark:text-gray-400">{event?.address}</p>
 
                                         </div>
                                         <div className='h-[20%] flex flex-row justify-between items-center mx-4 pb-4'>
-                                            <p className="font-normal text-gray-700 dark:text-gray-400">CAD $100.00</p>
+                                            <p className="font-normal text-gray-700 dark:text-gray-400">CAD${event?.ticket_price}</p>
                                             <div className={`h-[40px] w-[40px] rounded-full hover:bg-blue cursor-pointer flex items-center justify-center  border border-gray-300`}>
 
                                                 <img

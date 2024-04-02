@@ -17,16 +17,17 @@ import {
 
 interface ShareModalProps {
     onClose: () => void;
+    shareLink: string;
 }
 
-const ShareModal: React.FC<ShareModalProps> = ({ onClose }) => {
+const ShareModal: React.FC<ShareModalProps> = ({ onClose, shareLink }) => {
     const [isCopied, setIsCopied] = useState(false);
 
     const handleClose = (e: any) => {
         if (e.target.id === 'wrapper') onClose();
     }
     return (
-        <div id="wrapper" onClick={handleClose} aria-hidden="true" className="fixed top-0 right-0 bg-black bg-opacity-60 h-full w-full flex items-center justify-center" style={{ 'zIndex': 100 }}>
+        <div id="wrapper" onClick={handleClose} aria-hidden="true" className="fixed top-0 right-0 bg-black bg-opacity-60 h-full w-full flex items-center justify-center" style={{ 'zIndex': 1000 }}>
             <div className="relative p-0 md:w-[600px] w-[330px] max-w-full max-h-full">
 
                 <div className="bg-white rounded-[20px] overflow-hidden shadow dark:bg-gray-700">
@@ -58,29 +59,32 @@ const ShareModal: React.FC<ShareModalProps> = ({ onClose }) => {
 
                                 <div className="flex gap-6 mt-6">
                                     <FacebookShareButton
-                                        url={'http://localhost:3000'} >
+                                        url={shareLink}
+                                        quote={'next-share is a social share buttons for your next React apps.'}
+                                        hashtag={'#nextshare'} >
                                         <FacebookIcon size={32} round />
                                     </FacebookShareButton>
 
                                     <WhatsappShareButton
                                         /* Url you want to share */
-                                        url={'http://localhost:3000'} >
+                                        url={shareLink}
+                                        title={'next-share is a social share buttons for your next React apps.'}
+                                        separator=":: " >
                                         <WhatsappIcon size={32} round />
                                     </WhatsappShareButton>
                                     <LinkedinShareButton
-                                        /* Url you want to share */
-                                        url={'http://localhost:3000'} >
+                                        url={shareLink} >
                                         <LinkedinIcon size={32} round />
                                     </LinkedinShareButton>
                                 </div>
 
                                 <div className="w-[50%] h-[48px] mt-10 rounded-[10px] flex items-center px-2 border border-[#616161]">
                                     <div className="w-[80%]  text-[14px]">
-                                        <p className="truncate text-[14px]">http://localhost:3000/eventDetails</p>
+                                        <p className="truncate text-[14px]">{shareLink}</p>
                                     </div>
                                     <button onClick={() => {
                                         setIsCopied(true)
-                                        navigator.clipboard.writeText('http://localhost:3000/eventDetails')
+                                        navigator.clipboard.writeText(shareLink)
                                     }}
                                         className="w-[20%] custom-button"
                                         title={isCopied ? 'copied' : 'copy'}>

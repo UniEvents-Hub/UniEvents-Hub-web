@@ -4,7 +4,8 @@ import { User } from "@/app/models/user";
 
 type InitialState = {
     auth: AuthState;
-    userData: User | undefined;
+    userData: any | undefined;
+    accessToken: string;
     selectedRouteName: string;
     isAppInit: boolean;
     Loading: {
@@ -26,6 +27,7 @@ const initialState = {
         isLoading: false,
         message: "",
     },
+    accessToken: '',
     userData: undefined,
     userPasses: [],
     selectedRouteName: '',
@@ -40,10 +42,14 @@ export const appSlice = createSlice({
         logOut: (state) => {
             state.auth = initialState.auth;
             state.userData = initialState.userData;
+            state.accessToken = initialState.accessToken;
         },
         logIn: (state, action: PayloadAction<any>) => {
             state.auth.isAuth = true;
             //   state.auth.user = action.payload;
+        },
+        setToken: (state, action: PayloadAction<string>) => {
+            state.accessToken = action.payload;
         },
         userDetails: (state, action: PayloadAction<User>) => {
             state.userData = action.payload;
@@ -70,6 +76,7 @@ export const {
     logIn,
     logOut,
     userDetails,
+    setToken,
     setSelectedRoute,
     startLoader,
     stopLoader,

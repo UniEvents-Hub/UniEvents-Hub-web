@@ -11,15 +11,15 @@ import Image from 'next/image'
 export default function UpcomingList({ label }: any) {
     const router = useRouter();
     const [categories, setCategories] = useState<any[]>([,
-        { id: 0, name: 'All', slug: 'all', selected: true },
-        { id: 1, name: 'Today', slug: 'today', selected: false },
-        { id: 2, name: 'Tomorrow', slug: 'tomorrow', selected: false },
-        { id: 3, name: 'This Week', slug: 'this_week', selected: false },
-        { id: 4, name: 'This Weekend', slug: 'this_weekend', selected: false },
-        { id: 5, name: 'Next Week', slug: 'next_week', selected: false },
-        { id: 5, name: 'This Month', slug: 'this_month', selected: false },
-        { id: 6, name: 'Next Month', slug: 'next_month', selected: false },
-        { id: 7, name: 'This Year', slug: 'year', selected: false }]);
+        { id: 1, name: 'All', slug: 'all', selected: true },
+        { id: 2, name: 'Today', slug: 'today', selected: false },
+        { id: 3, name: 'Tomorrow', slug: 'tomorrow', selected: false },
+        { id: 4, name: 'This Week', slug: 'this_week', selected: false },
+        { id: 5, name: 'This Weekend', slug: 'this_weekend', selected: false },
+        { id: 6, name: 'Next Week', slug: 'next_week', selected: false },
+        { id: 7, name: 'This Month', slug: 'this_month', selected: false },
+        { id: 8, name: 'Next Month', slug: 'next_month', selected: false },
+        { id: 9, name: 'This Year', slug: 'year', selected: false }]);
     const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
@@ -38,16 +38,17 @@ export default function UpcomingList({ label }: any) {
 
     const handleCategorySelected = (category: any, index: number) => {
         if (category) {
-            // dispatch(setSelectedTag(category.slug))
-            var newState: any[] = []
-            // set the selected property to false for all categories
-            categories.forEach((item: any) => {
-                newState.push({ ...item, selected: false })
+            const updatedCategories = categories.map((obj) => {
+                if (category.id === obj.id) {
+                    obj.selected = true
+                }
+                else {
+                    obj.selected = false
+                }
+                return obj;
             })
-            // set the selected property to true for the selected category
-            newState[index] = { ...category, selected: true }
-            // setSelectedTags(selectTags)
-            setCategories(newState)
+            setCategories(updatedCategories)
+
         }
     }
 
@@ -65,11 +66,11 @@ export default function UpcomingList({ label }: any) {
                                     <div
                                         onClick={() => handleCategorySelected(item, index)}
                                         key={index}
-                                        className={`h-[35px] w-[100px] rounded-full px-4 py-3 text-sm font-semibold hover:bg-blue cursor-pointer flex items-center justify-center ${item.selected ? 'bg-[#333E48] border border-[#616161]' : 'border border-[#616161]'
+                                        className={`h-[35px] rounded-full px-[20px] flex items-center justify-center hover:bg-blue cursor-pointer ${item.selected ? 'bg-[#333E48] border border-[#616161]' : 'border border-[#616161]'
                                             }`}
                                     >
 
-                                        <span className={`text-center select-none ${item.selected ? 'text-white text-[12px] font-medium' : 'text-gray-600 text-[12px] font-medium'}`}>{item.name}</span>
+                                        <span className={`select-none ${item.selected ? 'text-white text-[12px] font-medium' : 'text-gray-600 text-[12px] font-medium'}`}>{item.name}</span>
 
                                     </div>
                                 ))}
