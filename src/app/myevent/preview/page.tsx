@@ -9,9 +9,10 @@ import EventCard from "@/app/components/EventCard/eventCard"
 import MapView from '@/app/components/MapComponent/Map';
 import CheckoutModal from "./checkout-modal"
 import ShareModal from "../../components/EventCard/share-modal";
-import { getEvents, getEventDetails, doUpdateEvent } from '@/app/services/Event/event-service';
+import { getEvents, getEventDetails, doUpdateEvent, doSaveEvent } from '@/app/services/Event/event-service';
 import Loader from '@/app/components/Loader';
 import Urls from '@/app/Networking/urls';
+import MessageModal from '@/app/components/common/messageModal';
 
 function EventPreviewPage() {
     const router = useRouter();
@@ -23,6 +24,8 @@ function EventPreviewPage() {
     const [shareLink, setShareLink] = useState<any>('')
     const [isCheckoutModalShow, setIsCheckoutModalShow] = useState(false);
     const [isShareModalShow, setIsShareModalShow] = useState(false);
+    const [showMsgModal, setShowMsgModal] = useState(false);
+    const [messageType, setMessageType] = useState('')
     const [loading, setLoading] = useState<boolean>(true);
     const searchParams = useSearchParams();
 
@@ -74,7 +77,8 @@ function EventPreviewPage() {
                 params,
                 (success: any) => {
                     console.log('doUpdateEvent success', success);
-
+                    setShowMsgModal(true)
+                    setMessageType('success')
                     if (success && success.data) {
                         getEventInfo(success.data.id)
                         // router.push(`/myevent/preview?eventId=${success.data.id}`)
@@ -247,6 +251,14 @@ function EventPreviewPage() {
                     </>
                     :
                     null
+            }
+
+            {
+                showMsgModal ?
+                    <MessageModal
+                        message={'Event Published successfully!'}
+                        type={messageType}
+                        closeModal={() => setShowMsgModal(false)} /> : null
             }
 
         </>

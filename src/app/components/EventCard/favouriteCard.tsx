@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useRouter } from 'next/navigation'
@@ -6,13 +7,14 @@ import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/app/redux/store";
 import ShareModal from "./share-modal"
 import Image from 'next/image'
+import Urls from '@/app/Networking/urls';
 
 
 
-export default function FavouriteCard({ label }: any) {
+export default function FavouriteCard({ label, events }: any) {
     const router = useRouter();
     const [isShareModalShow, setIsShareModalShow] = useState(false);
-    const [events, setEvents] = useState<any[]>([,
+    const [localEvents, setEvents] = useState<any[]>([,
         { id: 0, name: 'U of A Forestry Graduation Night', slug: 'all', selected: false, image: "/images/event_banner.jpeg" },
         { id: 1, name: 'CSC Edmonton Presents:National Building Code Changes – 2023 Alberta Edition', slug: 'today', selected: false, image: "/images/csc_event.jpeg" },
         { id: 2, name: 'Albertas Battle Through Recovery - Edmonton', slug: 'tomorrow', selected: false, image: "/images/battle_event.jpeg" },
@@ -71,18 +73,17 @@ export default function FavouriteCard({ label }: any) {
                                                 src={event.image} alt="" />
                                         </a> */}
                                         <div className="w-[80%] p-5">
-                                            <a href="#">
-                                                <h1 className="mb-2 text-[24px] font-bold tracking-tight text-gray-900 dark:text-white">{event.name}</h1>
-                                            </a>
-                                            <p className="mb-[6px] text-[16px] font-normal text-red-500 dark:text-gray-400">Tuesday, Mar 12, 1:00 PM</p>
-                                            <p className="mb-3 text-[16px] font-normal text-gray-700 dark:text-gray-400">Universirty Of Alberta</p>
-                                            <p className="mb-0 text-[16px] font-bold text-gray-700 dark:text-gray-400">CAD $100.00</p>
+                                            <h1 className="mb-2 text-[24px] font-bold tracking-tight text-gray-900 dark:text-white">{event?.event?.title}</h1>
+
+                                            <p className="mb-[6px] text-[16px] font-normal text-red-500 dark:text-gray-400">{event?.event?.date}, {event?.event?.start_time}</p>
+                                            <p className="mb-3 text-[16px] font-normal text-gray-700 dark:text-gray-400">{event?.event?.address}</p>
+                                            <p className="mb-0 text-[16px] font-bold text-gray-700 dark:text-gray-400">CAD${event?.event?.ticket_price}</p>
                                         </div>
 
                                         <div className='flex flex-col justify-between items-center'>
                                             <img
                                                 className=" w-[312px] h-[150px]"
-                                                src={event.image} alt="" />
+                                                src={event.event?.banner ? `${Urls.BASE_URL}${event.event?.banner}` : '/images/event_banner.jpeg'} alt="" />
 
                                             <div className="ml-auto flex items-center gap-6 justify-end pb-4 mr-6">
 
@@ -108,6 +109,17 @@ export default function FavouriteCard({ label }: any) {
 
                         </div>
                     </> : <div>
+                        <label
+                            className="relative flex min-h-[200px] mt-10 items-center justify-center rounded-md border border-dashed border-[#e0e0e0] bg-gray-100 p-12 text-center"
+                        >
+                            <div>
+                                <span
+                                    className="inline-flex   py-4 px-7 text-base font-medium text-[#07074D] "
+                                >
+                                    No event found!
+                                </span>
+                            </div>
+                        </label>
 
                     </div>
             }

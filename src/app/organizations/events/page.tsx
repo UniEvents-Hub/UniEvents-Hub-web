@@ -14,7 +14,7 @@ import { getEvents, getOrgEvents } from '@/app/services/Event/event-service';
 function OrganizationEventPage() {
     const [backgroundGradiant, setBackgroundGradient] = useState<string>("tech-gradient-background");
     const [showMenu, setShowMenu] = useState(false);
-    const [dropData, setDropData] = useState([{ id: 0, name: 'Upcoming events', slug: 'upcoming', selected: false }, { id: 1, name: 'draft events', slug: 'draft', selected: false }, { id: 2, name: 'Past events', slug: 'past', selected: false }, { id: 3, name: 'All events', slug: 'all', selected: false }])
+    const [dropData, setDropData] = useState([{ id: 0, name: 'All events', slug: 'all', selected: false }, { id: 1, name: 'Draft events', slug: 'draft', selected: false }, { id: 2, name: 'Upcoming events', slug: 'upcoming', selected: false }, { id: 3, name: 'Past events', slug: 'past', selected: false }])
     const [filterType, setFilterType] = useState('Upcoming events');
     const [loading, setLoading] = useState<boolean>(true);
     const [allEvents, setAllEvents] = useState([]);
@@ -132,7 +132,7 @@ function OrganizationEventPage() {
 
                                 <div className="relative">
                                     <button onClick={() => setShowMenu(!showMenu)} id="dropdownDefaultButton" data-dropdown-toggle="dropdown"
-                                        className="h-[50px] mr-[200px] text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">{filterType}
+                                        className="h-[50px] mr-[200px] text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-[12px] px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">{filterType}
                                         <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
                                         </svg>
@@ -146,7 +146,7 @@ function OrganizationEventPage() {
                                                         dropData.map((item, index) => {
                                                             return (
                                                                 <li key={index} onClick={() => handleDropDown(item)}>
-                                                                    <a className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{item.name}</a>
+                                                                    <a className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{item.name}</a>
                                                                 </li>
                                                             )
                                                         })
@@ -159,7 +159,7 @@ function OrganizationEventPage() {
                                 <div className="flex justify-end items-end">
                                     <button
                                         onClick={() => router.push('/createEvent')} id="dropdownDefaultButton" data-dropdown-toggle="dropdown"
-                                        className="h-[50px] bg-[#007a33] hover:bg-blue-600 text-[#f2cd00] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-6.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+                                        className="w-[120px] h-[50px] bg-[#007a33] hover:bg-blue-600 text-[#f2cd00] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-[14px] font-bold px-4 py-4 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
                                         Create Event
 
                                     </button>

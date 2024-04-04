@@ -376,9 +376,9 @@ function CreateEventPage(props: any) {
             event_type: selectedCategory,
             title: title,
             event_status: 'draft',
-            date: dayjs(startDate).format("YYYY-MM-DD"),
-            start_time: formattedStartTime,
-            end_time: formattedEndTime,
+            date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD"),
+            start_time: formattedStartTime ? formattedStartTime : dayjs().format("h:mm A"),
+            end_time: formattedEndTime ? formattedEndTime : dayjs().format("h:mm A"),
             longitude: selectedCoordinates ? selectedCoordinates[1] : 53.5213,
             latitude: selectedCoordinates ? selectedCoordinates[0] : -113.521,
             address: query,
@@ -654,7 +654,7 @@ function CreateEventPage(props: any) {
                                             </svg>
                                         </div>
                                         <div className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                            <span>{startDate ? dayjs(startDate).format("DD-MM-YYYY") : eventDetails && eventDetails.date ? eventDetails.date : "Select your date"}</span>
+                                            <span>{startDate ? dayjs(startDate).format("DD-MM-YYYY") : eventDetails && eventDetails.date ? eventDetails.date : dayjs().format("YYYY-MM-DD")}</span>
                                         </div>
                                     </div>
                                     {
@@ -674,7 +674,7 @@ function CreateEventPage(props: any) {
                                             </svg>
                                         </div>
                                         <div className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                            <span>{startTime ? startTime : eventDetails && eventDetails?.start_time ? eventDetails?.start_time : 'Select start time'}</span>
+                                            <span>{startTime ? startTime : eventDetails && eventDetails?.start_time ? eventDetails?.start_time : dayjs().format("h:mm A")}</span>
                                         </div>
                                     </div>
 
@@ -720,7 +720,7 @@ function CreateEventPage(props: any) {
                                             </svg>
                                         </div>
                                         <div className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                            <span>{endTime ? endTime : eventDetails && eventDetails?.start_time ? eventDetails?.end_time : "Select end time"}</span>
+                                            <span>{endTime ? endTime : eventDetails && eventDetails?.start_time ? eventDetails?.end_time : dayjs().format("h:mm A")}</span>
                                         </div>
                                     </div>
 

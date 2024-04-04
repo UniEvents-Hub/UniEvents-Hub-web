@@ -12,6 +12,7 @@ import { useAppSelector } from "@/app/redux/store";
 import * as _ from "lodash";
 import { doUpdateUser } from '@/app/services/User/user-service';
 import { TokenConstants } from '../utils/constants';
+import MessageModal from '@/app/components/common/messageModal';
 
 function ProfilePage() {
     const router = useRouter();
@@ -19,6 +20,8 @@ function ProfilePage() {
     const [image, setImage] = useState(null);
     const [filename, setFilename] = useState('');
     const [userInfo, setUserInfo] = useState<any>(null);
+    const [showMsgModal, setShowMsgModal] = useState(false);
+    const [messageType, setMessageType] = useState('')
     const fileInputRef = useRef<any>(null);
     const dispatch = useDispatch();
 
@@ -39,7 +42,7 @@ function ProfilePage() {
             reader.onload = (e: any) => {
                 // Set the selected image file to the state
                 setImage(e.target.result);
-                updateProfilePhoto()
+                updateProfilePhoto(e.target.result, selectedFile.name)
             };
             reader.readAsDataURL(selectedFile);
         }
@@ -76,18 +79,20 @@ function ProfilePage() {
         return file;
     }
 
-    const updateProfilePhoto = () => {
+    const updateProfilePhoto = (pickedImage: any, pickedFileName: any) => {
         let params = {
-            profile_photo: image ? base64ToFile(image, filename) : '',
+            profile_photo: pickedImage ? base64ToFile(pickedImage, pickedFileName) : '',
         };
         console.log('params', params)
         let user_id = localStorage.getItem(TokenConstants.USER_INFO)
+        console.log('user_id', user_id)
         doUpdateUser(
             user_id,
             params,
             (success: any) => {
-                console.log('doUpdateUser success', success);
-
+                console.log('updateProfilePhoto success', success);
+                setShowMsgModal(true)
+                setMessageType('success')
                 if (success) {
                 }
             },
@@ -145,6 +150,14 @@ function ProfilePage() {
             <BasicInfo userInfo={userInfo} />
             <HomeAddress userInfo={userInfo} />
             <BillingAddress userInfo={userInfo} />
+
+            {
+                showMsgModal ?
+                    <MessageModal
+                        message={'Profile photo updated successfully!'}
+                        type={messageType}
+                        closeModal={() => setShowMsgModal(false)} /> : null
+            }
         </div>
 
     );

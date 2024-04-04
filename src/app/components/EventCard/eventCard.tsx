@@ -65,16 +65,16 @@ export default function EventCard({ label, events }: any) {
                                 className="flex flex-wrap gap-6"
                             >
                                 {events.map((event: any, index: any) => (
-                                    <div key={index} onClick={() => goToDetails(event)} className="w-[280px] pb-4 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                                        <a href="#">
-                                            <img
-                                                className="rounded-t-lg w-[312px] h-[150px]"
-                                                src={event.banner ? `${Urls.BASE_URL}${event.banner}` : '/images/event_banner.jpeg'} alt="" />
-                                        </a>
+                                    <div key={index} onClick={() => goToDetails(event)} className="w-[280px] pb-4 cursor-pointer bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+
+                                        <img
+                                            className="rounded-t-lg w-[312px] h-[150px]"
+                                            src={event.banner ? `${Urls.BASE_URL}${event.banner}` : '/images/event_banner.jpeg'} alt="" />
+
                                         <div className="p-5 h-[40%]">
-                                            <a href="#">
-                                                <h5 className="mb-2 text-[16px] font-bold tracking-tight text-gray-900 dark:text-white">{event.title}</h5>
-                                            </a>
+
+                                            <h5 className="mb-2 text-[16px] font-bold tracking-tight text-gray-900 dark:text-white">{event.title}</h5>
+
                                             <p className="mb-[6px] text-[12px] font-normal text-gray-700 dark:text-gray-400">{event?.date}, {event?.start_time}</p>
                                             <p className="mb-3 text-[12px] font-normal text-gray-700 dark:text-gray-400">{event?.address}</p>
 
@@ -97,7 +97,17 @@ export default function EventCard({ label, events }: any) {
 
                         </div>
                     </> : <div>
-
+                        <label
+                            className="relative flex min-h-[200px] mt-10 items-center justify-center rounded-md border border-dashed border-[#e0e0e0] bg-gray-100 p-12 text-center"
+                        >
+                            <div>
+                                <span
+                                    className="inline-flex   py-4 px-7 text-base font-medium text-[#07074D] "
+                                >
+                                    No event found!
+                                </span>
+                            </div>
+                        </label>
                     </div>
             }
 

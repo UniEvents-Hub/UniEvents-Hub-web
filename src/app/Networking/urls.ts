@@ -12,7 +12,9 @@ const Urls = {
     GET_EVENT_DETAILS: 'event/specificevent/',
     CREATE_EVENT: 'event/eventcreate/',
     UPDATE_EVENT: 'event/eventupdate/',
+    SAVED_EVENT: 'event/eventsave/',
     GET_ORG_EVENTS: 'event/userspecificevent/',
+    GET_FAVS_EVENTS: 'event/getsaved/',
     REFRESH_TOKEN: 'refreshToken', 
   };
   

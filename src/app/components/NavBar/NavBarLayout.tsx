@@ -13,8 +13,8 @@ export default function NavBarLayout({ pageTitle, children }: any) {
     const userData = useAppSelector((state) => state.appReducer.userData);
 
     useEffect(() => {
-        console.log('accessToken', accessToken)
         let token = localStorage.getItem(TokenConstants.ACCESS_TOKEN);
+        console.log('NavBarLayout token', token)
         if (token) {
             setAccessToken(token);
 

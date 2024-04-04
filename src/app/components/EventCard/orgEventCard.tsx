@@ -72,13 +72,13 @@ export default function OrgEventCard({ label, events }: any) {
                                         <div className="w-[60%] flex md:flex-row flex-col">
                                             <img
                                                 onClick={() => goToDetails(event)}
-                                                className="w-[112px] h-[112px] rounded-[6px] object-cover"
+                                                className="w-[112px] h-full rounded-[2px] object-stretch"
                                                 src={event.banner ? `${Urls.BASE_URL}${event.banner}` : '/images/event_banner.jpeg'} alt="" />
                                             <div className='md:w-[70%] w-[100%] ml-6 mt-4'>
                                                 <a onClick={() => goToDetails(event)}>
                                                     <h1 className="w-[90%] mb-2 text-[14px] font-bold tracking-tight text-gray-900 dark:text-white">{event.title}</h1>
                                                 </a>
-                                                <div className="flex items-center justify-start mt-2  cursor-pointer hover:underline">
+                                                <div className="flex items-center justify-start mt-2 hover:underline">
                                                     <img
                                                         src="/images/calender_icon.svg"
                                                         alt="Description of your image"
@@ -86,7 +86,7 @@ export default function OrgEventCard({ label, events }: any) {
                                                     <p className="mb-[2px] ml-2 text-[14px] font-normal text-red-500 dark:text-gray-400">{event?.date}, {event?.start_time}</p>
                                                 </div>
 
-                                                <div className="flex items-center justify-start mt-2  cursor-pointer hover:underline">
+                                                <div className="flex items-center justify-start mt-2 mb-4  cursor-pointer hover:underline">
                                                     <img
                                                         src="/images/location_icon.svg"
                                                         alt="Description of your image"
@@ -118,7 +118,17 @@ export default function OrgEventCard({ label, events }: any) {
 
                         </div>
                     </> : <div>
-
+                        <label
+                            className="relative flex min-h-[200px] mt-10 items-center justify-center rounded-md border border-dashed border-[#e0e0e0] bg-gray-100 p-12 text-center"
+                        >
+                            <div>
+                                <span
+                                    className="inline-flex   py-4 px-7 text-base font-medium text-[#07074D] "
+                                >
+                                    No event found!
+                                </span>
+                            </div>
+                        </label>
                     </div>
             }
             {

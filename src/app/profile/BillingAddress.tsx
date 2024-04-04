@@ -20,6 +20,7 @@ import Select from "react-select";
 import * as _ from "lodash";
 import { doUpdateUser } from '@/app/services/User/user-service';
 import { TokenConstants } from '../utils/constants';
+import MessageModal from '@/app/components/common/messageModal';
 
 type FormType = {
     billing_address1: string;
@@ -30,7 +31,7 @@ type FormType = {
     billing_country: string;
 };
 
-export default function BillingAddress({ }) {
+export default function BillingAddress({ userInfo }: any) {
     const userData = useAppSelector((store) => store.appReducer.userData);
     const authSelector = useAppSelector((store) => store.appReducer.auth);
     const formRef = useRef<HTMLFormElement>(null);
@@ -38,6 +39,8 @@ export default function BillingAddress({ }) {
     const [selectedCountry, setSelectedCountry] = useState<any>({});
     const [provinces, setProvinces] = useState<any>([])
     const [selectedProvince, setSelectedProvince] = useState<any>({})
+    const [showMsgModal, setShowMsgModal] = useState(false);
+    const [messageType, setMessageType] = useState('')
     const [formData, setFormData] = useState<FormType>({
         billing_address1: "",
         billing_address2: "",
@@ -125,7 +128,8 @@ export default function BillingAddress({ }) {
                 params,
                 (success: any) => {
                     console.log('doUpdateUser success', success);
-
+                    setShowMsgModal(true)
+                    setMessageType('success')
                     if (success) {
                     }
                 },
@@ -267,6 +271,13 @@ export default function BillingAddress({ }) {
                     </form>
                 </div>
             </div>
+            {
+                showMsgModal ?
+                    <MessageModal
+                        message={'Profile updated successfully!'}
+                        type={messageType}
+                        closeModal={() => setShowMsgModal(false)} /> : null
+            }
         </>
     );
 }

@@ -14,6 +14,7 @@ function DashboardPage() {
     const [backgroundGradiant, setBackgroundGradient] = useState<string>("all-gradient-background");
     const [searchInput, setSearchInput] = useState("");
     const [loading, setLoading] = useState<boolean>(true);
+    const [selectedCategory, setSelectedCategory] = useState(null)
     const [allEvents, setAllEvents] = useState([]);
     const [filteredEvents, setFilteredEvents] = useState([]);
 
@@ -98,12 +99,27 @@ function DashboardPage() {
     const getCategoryInfo = (category: any) => {
         if (category) {
             getEventsByCategory(category.slug)
+            setSelectedCategory(category)
         }
     }
+
 
     const handleChange = (e: any) => {
         const query = e.target.value.toLowerCase();
         setSearchInput(query);
+        if (query) { }
+        const eventFilteredData = allEvents.filter(event =>
+            event?.title.toLowerCase().includes(query)
+        );
+
+        if (eventFilteredData && eventFilteredData.length > 0 && selectedCategory) {
+            const filterByCategoryEvents = eventFilteredData.filter(event => event.event_type === selectedCategory?.slug);
+            setFilteredEvents(filterByCategoryEvents);
+        }
+        else {
+            setFilteredEvents(eventFilteredData);
+        }
+
 
     };
 

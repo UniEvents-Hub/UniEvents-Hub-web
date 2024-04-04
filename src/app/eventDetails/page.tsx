@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
@@ -9,8 +10,9 @@ import EventCard from "@/app/components/EventCard/eventCard"
 import MapView from '@/app/components/MapComponent/Map';
 import CheckoutModal from "./checkout-modal"
 import ShareModal from "../components/EventCard/share-modal";
-import { getEvents, getEventDetails } from '@/app/services/Event/event-service';
+import { getEvents, getEventDetails, doSaveEvent } from '@/app/services/Event/event-service';
 import Loader from '@/app/components/Loader';
+import { TokenConstants } from '@/app/utils/constants';
 
 function EventDetailsPage() {
     const [backgroundGradiant, setBackgroundGradient] = useState<string>("all-gradient-background");
@@ -18,6 +20,7 @@ function EventDetailsPage() {
     const [ticketPrice, setTicketPrice] = useState(10);
     const [isCheckoutModalShow, setIsCheckoutModalShow] = useState(false);
     const [isShareModalShow, setIsShareModalShow] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
     const [loading, setLoading] = useState<boolean>(true);
     const [eventDetails, setEventDetails] = useState<any>(null);
     const [shareLink, setShareLink] = useState<any>('')
@@ -53,8 +56,43 @@ function EventDetailsPage() {
                 }, 2000)
             },
         );
-
     }
+
+    const doSavedEvent = () => {
+        setIsSaved(!isSaved)
+        let user_id = localStorage.getItem(TokenConstants.USER_INFO);
+        const params = {
+            user: user_id,
+            event: eventDetails.id
+        };
+        doSaveEvent(
+            params,
+            (success: any) => {
+                console.log('doSaveEvent success', success);
+
+                if (success && success.data) {
+                    getEventInfo(success.data.event)
+                    // router.push(`/myevent/preview?eventId=${success.data.id}`)
+                    // router.push('/organizations/events')
+                }
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000)
+            },
+            (error: any) => {
+                console.log('doUpdateEvent error', error);
+                setLoading(false);
+                if (error && error.data) {
+                    let errmsg = Object.values(error.data)[0] as any;
+                    console.log(errmsg)
+                    if (errmsg && errmsg.length > 0) {
+                        alert(errmsg[0])
+                    }
+                }
+            },
+        );
+    }
+
     if (loading)
         return (
             <>
@@ -99,9 +137,11 @@ function EventDetailsPage() {
                                             className="w-[16px] h-[16px] object-stretch" />
                                         <span className="text-[12px]">Share</span>
                                     </div>
-                                    <div className={`h-[30px] w-[80px] gap-2 rounded-[6px] px-4 py-3 text-sm font-semibold hover:bg-blue cursor-pointer flex items-center justify-center  border border-gray-300`}>
+                                    <div
+                                        onClick={() => doSavedEvent()}
+                                        className={`h-[30px] w-[80px] gap-2 rounded-[6px] px-4 py-3 text-sm font-semibold hover:bg-blue cursor-pointer flex items-center justify-center  border border-gray-300`}>
                                         <img
-                                            src="/images/favourite_icon.svg"
+                                            src={isSaved ? "/images/favourite_icon.svg" : "/images/unfavourite_icon.svg"}
                                             alt="Description of your image"
                                             className="w-[16px] h-[16px] object-stretch" />
                                         <span className="text-[12px]">Save</span>

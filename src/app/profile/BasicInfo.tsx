@@ -18,6 +18,7 @@ import { useDispatch } from "react-redux";
 import * as _ from "lodash";
 import { doUpdateUser } from '@/app/services/User/user-service';
 import { TokenConstants } from '../utils/constants';
+import MessageModal from '@/app/components/common/messageModal';
 
 type FormType = {
     firstName: string;
@@ -29,6 +30,8 @@ type FormType = {
 export default function BasicInfo({ userInfo }: any) {
     const userData = useAppSelector((store) => store.appReducer.userData);
     const authSelector = useAppSelector((store) => store.appReducer.auth);
+    const [showMsgModal, setShowMsgModal] = useState(false);
+    const [messageType, setMessageType] = useState('')
     const formRef = useRef<HTMLFormElement>(null);
     const [formData, setFormData] = useState<FormType>({
         firstName: "",
@@ -96,7 +99,8 @@ export default function BasicInfo({ userInfo }: any) {
                 params,
                 (success: any) => {
                     console.log('doUpdateUser success', success);
-
+                    setShowMsgModal(true)
+                    setMessageType('success')
                     if (success) {
                     }
                 },
@@ -240,6 +244,13 @@ export default function BasicInfo({ userInfo }: any) {
                     </form>
                 </div>
             </div>
+            {
+                showMsgModal ?
+                    <MessageModal
+                        message={'Profile updated successfully!'}
+                        type={messageType}
+                        closeModal={() => setShowMsgModal(false)} /> : null
+            }
         </>
     );
 }

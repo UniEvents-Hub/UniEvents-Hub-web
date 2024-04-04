@@ -23,6 +23,11 @@ export const getFilteredEvents = async (event_type: any, success: any, error: an
    return GET(url, success, error);
  };
 
+ export const getFavouritesEvents = async (user_id: any, success: any, error: any) => {
+  let url = `${Urls.BASE_URL}${Urls.GET_FAVS_EVENTS}?user_id=${user_id}`; 
+ return GET(url, success, error);
+};
+
 export const doCreateEvent = async (params: any, success: any, error: any) => {
     let url = `${Urls.BASE_URL}${Urls.CREATE_EVENT}`; 
    return POST_EVENT(url, params, success, error);
@@ -32,3 +37,8 @@ export const doCreateEvent = async (params: any, success: any, error: any) => {
     let url = `${Urls.BASE_URL}${Urls.UPDATE_EVENT}${event_id}/`; 
    return PATCH_EVENT(url, params, success, error);
  };
+
+ export const doSaveEvent = async (params: any, success: any, error: any) => {
+  let url = `${Urls.BASE_URL}${Urls.SAVED_EVENT}`; 
+ return POST_EVENT(url, params, success, error);
+};
