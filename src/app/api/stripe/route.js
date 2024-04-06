@@ -29,7 +29,7 @@ export async function POST(request) {
             product_data: {
               name: "INV-" + date,
             },
-            unit_amount: amount * 100 || 100,
+            unit_amount: amount * 10 || 10,
           },
           quantity: quantity,
         },

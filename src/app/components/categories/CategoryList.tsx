@@ -12,14 +12,14 @@ export default function CategoryList({ label, getCategoryInfo }: any) {
     const router = useRouter();
     const [categories, setCategories] = useState<any[]>([,
         { id: 1, name: 'All', slug: 'all', selected: true },
-        { id: 2, name: 'Film', slug: 'film', selected: false },
-        { id: 3, name: 'Tech', slug: 'tech', selected: false },
-        { id: 4, name: 'Gaming', slug: 'gaming', selected: false },
-        { id: 5, name: 'Culture', slug: 'culture', selected: false },
-        { id: 6, name: 'Music', slug: 'music', selected: false },
-        // { id: 5, name: 'Food & Drink', slug: 'music', selected: false },
-        { id: 7, name: 'Health', slug: 'health', selected: false },
-        // { id: 7, name: 'Business', slug: 'music', selected: false }
+        { id: 2, name: 'Tech', slug: 'tech', selected: false },
+        { id: 3, name: 'Music', slug: 'music', selected: false },
+        { id: 4, name: 'Religious', slug: 'religious', selected: false },
+        { id: 5, name: 'Movie', slug: 'movie', selected: false },
+        { id: 6, name: 'Sports', slug: 'sports', selected: false },
+        { id: 7, name: 'Gaming', slug: 'gaming', selected: false },
+        { id: 8, name: 'Culture', slug: 'culture', selected: false },
+        { id: 9, name: 'Health', slug: 'health', selected: false }
     ]);
     const dispatch = useDispatch<AppDispatch>();
 

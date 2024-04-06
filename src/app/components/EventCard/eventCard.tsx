@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useRouter } from 'next/navigation'
@@ -6,8 +7,8 @@ import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/app/redux/store";
 import Image from 'next/image'
 import Urls from '@/app/Networking/urls';
-
-
+import { getFavouritesEvents } from '@/app/services/Event/event-service';
+import { TokenConstants } from '@/app/utils/constants';
 
 export default function EventCard({ label, events }: any) {
     const router = useRouter();
@@ -28,24 +29,29 @@ export default function EventCard({ label, events }: any) {
 
     }, []);
 
-    const getcagoryData = async () => {
-        // const categoryData = await getCategories();
-        // setEvents(categoryData);
-    }
+    const getFavEvents = (event_id: any) => {
+        let user_id = localStorage.getItem(TokenConstants.USER_INFO);
 
-    const handleCategorySelected = (category: any, index: number) => {
-        // if (category) {
-        //     // dispatch(setSelectedTag(category.slug))
-        //     var newState: any[] = []
-        //     // set the selected property to false for all categories
-        //     categories.forEach((item: any) => {
-        //         newState.push({ ...item, selected: false })
-        //     })
-        //     // set the selected property to true for the selected category
-        //     newState[index] = { ...category, selected: true }
-        //     // setSelectedTags(selectTags)
-        //     setCategories(newState)
-        // }
+        getFavouritesEvents(
+            user_id,
+            (success: any) => {
+                console.log('getFavouritesEvents success', success);
+                if (success && success.data) {
+                    let find_fav = success.data.filter((obj: any) => obj.event.id === event_id)
+                    console.log('find_fav', find_fav)
+                    if (find_fav) {
+                        return true
+                    }
+                    else {
+                        return false
+                    }
+                }
+            },
+            (error: any) => {
+                console.log('login error', error);
+            },
+        );
+        return true;
     }
 
     const goToDetails = (event: any) => {
@@ -80,15 +86,36 @@ export default function EventCard({ label, events }: any) {
 
                                         </div>
                                         <div className='h-[20%] flex flex-row justify-between items-center mx-4 pb-4'>
-                                            <p className="font-normal text-gray-700 dark:text-gray-400">CAD${event?.ticket_price}</p>
-                                            <div className={`h-[40px] w-[40px] rounded-full hover:bg-blue cursor-pointer flex items-center justify-center  border border-gray-300`}>
+                                            {
+                                                event?.ticket_type === "Free" ?
+                                                    event?.ticket_type === "Donation" ?
+                                                        <p className="font-normal text-gray-700 dark:text-gray-400">Donation</p> :
+                                                        <p className="font-bold text-gray-700 dark:text-gray-400">Free</p> :
+                                                    <p className="font-bold text-gray-700 dark:text-gray-400">CAD${event?.ticket_price}</p>
+                                            }
 
-                                                <img
-                                                    src="/images/unfavourite_icon.svg"
-                                                    alt="Description of your image"
-                                                    className="w-[20px] h-[20px] object-cover" />
-                                                {/* <span className="text-[12px]">Save</span> */}
-                                            </div>
+
+                                            {
+                                                getFavEvents(event.id) ?
+                                                    <div className={`h-[40px] w-[40px] rounded-full hover:bg-blue cursor-pointer flex items-center justify-center  border border-gray-300`}>
+
+                                                        <img
+                                                            src="/images/favourite_icon.svg"
+                                                            alt="Description of your image"
+                                                            className="w-[20px] h-[20px] object-cover" />
+                                                        {/* <span className="text-[12px]">Save</span> */}
+                                                    </div>
+                                                    :
+                                                    <div className={`h-[40px] w-[40px] rounded-full hover:bg-blue cursor-pointer flex items-center justify-center  border border-gray-300`}>
+
+                                                        <img
+                                                            src="/images/unfavourite_icon.svg"
+                                                            alt="Description of your image"
+                                                            className="w-[20px] h-[20px] object-cover" />
+                                                        {/* <span className="text-[12px]">Save</span> */}
+                                                    </div>
+                                            }
+
                                         </div>
 
                                     </div>

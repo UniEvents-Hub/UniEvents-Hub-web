@@ -54,18 +54,18 @@ function FavouritesPage() {
 
     return (
         <>
-            <div className={`flex flex-col md:pl-[200px] px-[60px] w-full overflow-hidden no-scrollbar ${backgroundGradiant} `}>
+            <div className={`flex flex-col md:pl-[200px] px-[60px] w-full h-screen overflow-y-scroll pb-20 ${backgroundGradiant} `}>
                 <div className="bg-opacity-100">
 
                 </div>
-                <div className="md:w-[50%] h-screen ml-auto mr-auto  overflow-x-scroll no-scrollbar  mt-10">
+                <div className="md:w-[50%] h-screen ml-auto mr-auto mb-10 mt-10 pb-10">
 
-                    <div>
-                        <h1 className="text-#1C1C1C text-[38px] text-bold text-left mb-6">Favourites</h1>
-                        <FavouriteCard events={allFavEvents} />
+                    <h1 className="text-#1C1C1C text-[38px] text-bold text-left mb-6">Favourites</h1>
+                    <FavouriteCard events={allFavEvents} />
+
+                    <div className="h-20">
+
                     </div>
-                    {/*   */}
-                    {/* <EventCard /> */}
                 </div>
 
 

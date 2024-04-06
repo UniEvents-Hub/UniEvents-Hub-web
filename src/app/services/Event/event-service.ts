@@ -1,5 +1,5 @@
 
-import {PATCH, GET, POST, POST_EVENT, PATCH_EVENT} from '@/app/Networking/http-request-handler';
+import {PATCH, GET, POST, POST_EVENT, PATCH_EVENT, DELETE} from '@/app/Networking/http-request-handler';
 import Urls from '@/app/Networking/urls';
 
 
@@ -41,4 +41,14 @@ export const doCreateEvent = async (params: any, success: any, error: any) => {
  export const doSaveEvent = async (params: any, success: any, error: any) => {
   let url = `${Urls.BASE_URL}${Urls.SAVED_EVENT}`; 
  return POST_EVENT(url, params, success, error);
+};
+
+export const doUnSaveEvent = async (params: any, event_id: any, success: any, error: any) => {
+  let url = `${Urls.BASE_URL}${Urls.UN_SAVED_EVENT}${event_id}/`; 
+ return DELETE(url, params, success, error);
+};
+
+export const doBuyTicket = async (params: any, success: any, error: any) => {
+  let url = `${Urls.BASE_URL}${Urls.BUY_TICKET}`; 
+ return POST(url, params, success, error);
 };

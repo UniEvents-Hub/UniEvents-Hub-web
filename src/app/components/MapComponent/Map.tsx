@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import './Map.css';
 
 const mapIcon = new Icon({
-    iconUrl: "/images/map_marker_icon.png",
+    iconUrl: "/images/map_marker_icon.svg",
     iconSize: [30, 30],
 });
 

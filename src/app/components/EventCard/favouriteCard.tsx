@@ -83,7 +83,7 @@ export default function FavouriteCard({ label, events }: any) {
                                         <div className='flex flex-col justify-between items-center'>
                                             <img
                                                 className=" w-[312px] h-[150px]"
-                                                src={event.event?.banner ? `${Urls.BASE_URL}${event.event?.banner}` : '/images/event_banner.jpeg'} alt="" />
+                                                src={event.event?.banner ? `${Urls.BASE_URL}${event?.event.banner}` : '/images/event_banner.jpeg'} alt="" />
 
                                             <div className="ml-auto flex items-center gap-6 justify-end pb-4 mr-6">
 

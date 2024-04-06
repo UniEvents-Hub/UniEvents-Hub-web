@@ -74,14 +74,9 @@ function EditEventPage() {
         // e.target.classList.remove('drag-over');
     };
 
-    const handleDrop = (e) => {
+    const handleDrop = (e: any) => {
         e.preventDefault();
         console.log('handleDrop', event)
-        // Remove styling for the drop zone
-        // e.target.classList.remove('drag-over');
-
-        // Trigger file input click event
-        // fileInputRef.current.click();
     };
 
     const handleFileChange = (event: any) => {
@@ -441,15 +436,14 @@ function EditEventPage() {
                         <span className="text-[12px] text-gray-700">Add more details about your event and include what people can expect if they attend.</span>
 
                         <div className="border-[1px] border-gray-90">
-                            {/* <Editor
-
+                            <Editor
                                 editorState={editorState}
                                 wrapperClassName="wrapper-class"
                                 editorClassName="editor-class"
                                 toolbarClassName="toolbar-class"
                                 onEditorStateChange={onEditorStateChange}
 
-                            /> */}
+                            />
                             {/* <textarea
                                 disabled
                                 value={draftToHtml(convertToRaw(editorState.getCurrentContent()))}

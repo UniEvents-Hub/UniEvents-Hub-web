@@ -9,6 +9,11 @@ import { useAppSelector } from "@/app/redux/store";
 import { getValueFromFormData, isEmpty } from "@/app/utils/utility-function"
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
+import { getEvents, getEventDetails, doBuyTicket } from '@/app/services/Event/event-service';
+import Loader from '@/app/components/Loader';
+import { TokenConstants } from '@/app/utils/constants';
+import Urls from '@/app/Networking/urls';
+import SuccessToast from '@/app/components/common/successToast';
 
 type FormType = {
     firstName: string;
@@ -23,28 +28,30 @@ interface CheckoutModalProps {
     quantity: number;
 }
 
-const asyncStripe = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-console.log('process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY', process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+// const asyncStripe = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+// console.log('process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY', process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
 
-const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, amount = 1, quantity = 1 }) => {
+const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, amount = 1, quantity = 1, eventDetails }: any) => {
     const router = useRouter();
     const userData = useAppSelector((store) => store.appReducer.userData);
     const formRef = useRef<HTMLFormElement>(null);
+    const [loading, setLoading] = useState<boolean>(true);
     const [formData, setFormData] = useState<FormType>({
         firstName: "",
         lastName: "",
         email: "",
         phoneNumber: "",
     });
-
+    const [isShowToast, setIsShowToast] = useState(false);
+    const [toastMsg, setToastMsg] = useState('');
     const submitButtonClasses = `w-[170px] bg-red-500 text-white text-[14px] p-2 rounded-[10px] mb-6 mt-6 hover:bg-white hover:text-black hover:border hover:border-gray-300`;
 
     useEffect(() => {
         setFormData({
-            firstName: userData?.firstName ?? "",
-            lastName: userData?.lastName ?? "",
-            email: userData?.email ?? "",
-            phoneNumber: userData?.phoneNumber ?? "",
+            firstName: userData?.user?.first_name ?? "",
+            lastName: userData?.user?.last_name ?? "",
+            email: userData?.user?.email ?? "",
+            phoneNumber: userData?.profile?.phone_number ?? "",
         });
     }, [userData]);
 
@@ -75,31 +82,86 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, amount = 1, quan
                 ? ""
                 : `+${formData.phoneNumber}`,
         };
+
+        buyTicket()
     }
 
     const handler = async () => {
         try {
-            const { data } = await axios.post("/api/stripe", {
-                data: { amount: amount, quantity: quantity },
-            }, {
-                headers: {
-                    "Content-Type": "application/json",
-                }
-            });
-            console.log('res.vvvv.', data)
-            window.location.href = data.url
-            // const { sessionId } = await res.json();
+            if (eventDetails) {
+                let totalAmount = eventDetails?.ticket_price * eventDetails?.quantity + eventDetails?.ticket_price * eventDetails?.quantity * 0.05
 
-            // const { error } = await stripe.redirectToCheckout({ sessionId });
-            // console.log(error);
-            // if (error) {
-            //     router.push("/errorPage");
-            // }
+                const { data } = await axios.post("/api/stripe", {
+                    data: { amount: totalAmount, quantity: quantity },
+                }, {
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                });
+                console.log('res.vvvv.', data)
+                window.location.href = data.url
+                // const { sessionId } = await res.json();
+
+                // const { error } = await stripe.redirectToCheckout({ sessionId });
+                // console.log(error);
+                // if (error) {
+                //     router.push("/errorPage");
+                // }
+
+            }
+
         } catch (err) {
             console.log(err);
             // router.push("/error");
         }
     };
+
+    const buyTicket = () => {
+        let user_id = localStorage.getItem(TokenConstants.USER_INFO);
+        let totalAmount = eventDetails?.ticket_price * eventDetails?.quantity + eventDetails?.ticket_price * eventDetails?.quantity * 0.05
+        const params = {
+            ticket_number: quantity,
+            total_cost: totalAmount ? totalAmount : 0.00,
+            user: user_id,
+            event: eventDetails?.id
+        };
+        doBuyTicket(
+            params,
+            (success: any) => {
+                console.log('doBuyTicket success', success);
+
+
+                if (success && success.data) {
+                    if (eventDetails?.ticket_type !== "Free") {
+                        handler()
+                    }
+                    else {
+                        setIsShowToast(true)
+                        setToastMsg("Thanks for your order!.")
+
+                        setTimeout(() => {
+                            router.push(`/tickets/orderDetails?orderId=${success.data?.id}&eventId=${success.data?.event}`)
+                        }, 1000)
+                    }
+                }
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000)
+            },
+            (error: any) => {
+                console.log('doUpdateEvent error', error);
+                setLoading(false);
+                if (error && error.data) {
+                    let errmsg = Object.values(error.data)[0] as any;
+                    console.log(errmsg)
+                    if (errmsg && errmsg.length > 0) {
+                        alert(errmsg[0])
+                    }
+                }
+            },
+        );
+    }
+
 
     const handleClose = (e: any) => {
         if (e.target.id === 'wrapper') onClose();
@@ -113,12 +175,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, amount = 1, quan
                         <div className="md:w-[70%] w-full flex flex-col h-[60%] relative">
                             <div className="h-[50px] w-full flex flex-col justify-center items-center">
                                 <h1 className="mt-6 text-[20px]">Checkout</h1>
-
                             </div>
                             <hr className="mr-0 mt-4 h-[2px] border-t-0 bg-gray-200" />
 
                             <div className="px-[60px] mt-10">
-                                <h1 className="ml-6 text-[24px]"> Billing information</h1>
+                                <h1 className="ml-6 text-[24px]"> Contact information</h1>
                                 <form action={formSubmitAction} ref={formRef}>
                                     <div className="flex flex-col">
                                         <div className="bg-white rounded-lg relative">
@@ -190,8 +251,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, amount = 1, quan
                                         </div>
                                     </div>
                                     <div className="ml-6">
-                                        <button type="submit" className={submitButtonClasses} onClick={handler}>
-                                            Proceed to Payment
+                                        <button type="submit" className={submitButtonClasses}>
+                                            {eventDetails?.ticket_type === "Free" ? "Register" : 'Proceed to Paymentyes'}
                                         </button>
                                     </div>
                                 </form>
@@ -200,11 +261,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, amount = 1, quan
 
                         <div className="flex flex-col md:w-[30%] w-full md:h-full h-full justify-start bg-gray-100 md:pr-0 pr-0 pt-0 md:pb-6 pb-2">
                             <img
-                                src="/images/battle_event.jpeg"
+                                src={eventDetails.banner ? `${Urls.BASE_URL}${eventDetails.banner}` : '/images/event_banner.jpeg'}
                                 alt="Description of your image"
                                 className="w-full px-[0px] h-[200px] rounded-[0px] object-stretch" />
                             <div className="md:flex hidden justify-end absolute top-0 right-0">
-                                <button onClick={() => onClose()} type="button" className="text-black bg-gray-500 h-[40px] w-[40px] hover:bg-gray-600 hover:text-gray-900 rounded-full text-sm inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="default-modal">
+                                <button onClick={() => onClose()} type="button" className="text-black bg-yellow-500 h-[40px] w-[40px] hover:bg-gray-600 hover:text-gray-900 rounded-full text-sm inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="default-modal">
                                     <svg className="w-[15px] h-[15px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                                         <path stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                                     </svg>
@@ -216,36 +277,38 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, amount = 1, quan
                                 <span className="text-black font-bold md:text-[18px] text-[14px]">Order Summary</span>
 
                                 <div className="flex justify-between mt-6">
-                                    <span className="text-[12px]">1 x Early Bird Fee($2249 Standard fee)</span>
-                                    <span className="text-[14px]">CAD $100.00</span>
+                                    <span className="text-[12px]">{`${quantity} x ($${eventDetails?.ticket_price} Standard fee)`}</span>
+                                    <span className="text-[14px]">CAD ${eventDetails?.ticket_price * quantity}</span>
                                 </div>
                                 <hr className="mr-0 mt-4 h-[2px] border-t-0 bg-gray-200" />
 
                                 <div className="flex justify-between mt-6">
                                     <span className="text-[12px]">SubTotal</span>
-                                    <span className="text-[14px]">CAD $100.00</span>
+                                    <span className="text-[14px]">CAD ${eventDetails?.ticket_price * quantity}</span>
                                 </div>
-                                <div className="flex justify-between mt-2">
+                                {/* <div className="flex justify-between mt-2">
                                     <span className="text-[12px]">Fees</span>
                                     <span className="text-[14px]">CAD $10.00</span>
-                                </div>
-                                <div className="flex justify-between mt-2">
+                                </div> */}
+                                {/* <div className="flex justify-between mt-2">
                                     <span className="text-[12px]">Delivery</span>
                                     <span className="text-[14px]">CAD $0.00</span>
-                                </div>
-                                <div className="flex justify-between mt-2">
-                                    <span className="text-[12px]">Tax</span>
-                                    <span className="text-[14px]">CAD $10.00</span>
-                                </div>
+                                </div> */}
+                                {
+                                    eventDetails?.ticket_type !== "Free" &&
+                                    <div className="flex justify-between mt-2">
+                                        <span className="text-[12px]">Tax</span>
+                                        <span className="text-[14px]">CAD ${eventDetails?.ticket_price * quantity * 0.05}</span>
+                                    </div>
+                                }
+
                                 <hr className="mr-0 mt-4 h-[2px] border-t-0 bg-gray-200" />
 
                                 <div className="flex justify-between mt-4">
                                     <span className="text-[18px] ">Total</span>
-                                    <span className="text-[14px]">CAD $150.00</span>
+                                    <span className="text-[14px]">CAD ${eventDetails?.ticket_price * quantity + eventDetails?.ticket_price * quantity * 0.05}</span>
                                 </div>
-
                             </div>
-
                         </div>
 
                         <div className="md:hidden flex justify-center items-center h-[50px] shadow border-t-[1px] bg-white">
@@ -253,10 +316,15 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, amount = 1, quan
                                 <span className="text-black">Close</span>
                             </button>
                         </div>
-
                     </div>
                 </div>
             </div>
+            {
+                isShowToast ?
+                    <SuccessToast
+                        message={toastMsg}
+                        closeModal={() => setIsShowToast(false)} /> : null
+            }
         </div>
     );
 }

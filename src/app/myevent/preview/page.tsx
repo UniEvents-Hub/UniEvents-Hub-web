@@ -169,10 +169,7 @@ function EventPreviewPage() {
                                 <div className="flex flex-col items-start mt-4 w-[60%] ">
                                     <h5 className="mb-2 text-[26px] font-bold tracking-tight text-gray-900 dark:text-white">About This Event</h5>
                                     <div className="flex flex-col mb-[6px] gap-4 text-[14px] font-normal text-gray-700 dark:text-gray-400">
-                                        <span>Registration and lunch served: 11:45AM</span>
-                                        <span>Presentation: 12:00PM-1:00PM</span>
-                                        <p> {eventDetails?.description}
-                                        </p>
+                                        <div dangerouslySetInnerHTML={{ __html: eventDetails?.description }} />
                                         <span>Please join us as we listen, learn and discuss.</span>
                                     </div>
 

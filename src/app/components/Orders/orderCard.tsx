@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useRouter } from 'next/navigation'
@@ -5,10 +6,13 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/app/redux/store";
 import Image from 'next/image'
+import Urls from '@/app/Networking/urls';
+import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+dayjs.extend(advancedFormat);
 
 
-
-export default function OrderCard({ label }: any) {
+export default function OrderCard({ label, orders }: any) {
     const router = useRouter();
     const [isShareModalShow, setIsShareModalShow] = useState(false);
     const [events, setEvents] = useState<any[]>([,
@@ -48,8 +52,8 @@ export default function OrderCard({ label }: any) {
         // }
     }
 
-    const goToDetails = (event: any) => {
-        router.push('/eventDetails')
+    const goToDetails = (order: any) => {
+        router.push(`/tickets/orderDetails?orderId=${order?.id}&eventId=${order?.event?.id}`)
     }
 
     const handleDownloadPdf = () => {
@@ -62,41 +66,37 @@ export default function OrderCard({ label }: any) {
     return (
         <div>
             {
-                events && events.length ?
+                orders && orders.length ?
                     <>
 
                         <div className="grid mb-10">
                             <div
                                 className="flex flex-wrap gap-6"
                             >
-                                {events.map((event: any, index: any) => (
+                                {orders.map((order: any, index: any) => (
                                     <div key={index} className=" w-full flex md:flex-col flex-col md:justify-between bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                                        {/* <a href="#">
-                                            <img
-                                                className="rounded-t-lg w-[312px] h-[150px]"
-                                                src={event.image} alt="" />
-                                        </a> */}
+
                                         <div className="w-[100%] flex md:flex-row flex-col">
                                             <img
-                                                onClick={() => goToDetails(event)}
+                                                onClick={() => goToDetails(order)}
                                                 className="md:w-[312px] w-[100%] h-[120px]"
-                                                src={event.image} alt="" />
-                                            <div className='md:w-[70%] w-[100%] ml-6 mt-4'>
+                                                src={order?.event.banner ? `${Urls.BASE_URL}${order?.event.banner}` : '/images/event_banner.jpeg'} alt="" />
+                                            <div className='md:w-[80%] w-[100%] ml-6 mt-4'>
                                                 <div className="flex md:justify-start justify-between items-start mt-0">
-                                                    <a onClick={() => goToDetails(event)}>
-                                                        <h1 className="w-[90%] mb-2 text-[18px] font-bold tracking-tight text-gray-900 dark:text-white">{event.name}</h1>
+                                                    <a className="w-[90%]" onClick={() => goToDetails(order)}>
+                                                        <h1 className="mb-1 ml-[4px] text-[16px] font-bold tracking-tight text-gray-900 dark:text-white">{order?.event.title}</h1>
                                                     </a>
-                                                    <div className='w-[160px] block md:hidden ml-auto mt-0 mr-8 bg-gray-200 h-[50px] rounded-lg p-4 flex justify-center items-center cursor-pointer hover:underline hover:bg-blue-300'>
+                                                    <div onClick={() => goToDetails(order)} className='w-[160px] md:hidden ml-auto mt-0 mr-8 bg-gray-200 h-[50px] rounded-lg p-4 flex justify-center items-center cursor-pointer hover:underline hover:bg-blue-300'>
                                                         <span className="mb-0 text-[12px] font-bold text-gray-700 dark:text-gray-400">View Order Details</span>
 
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center justify-start mt-2  cursor-pointer hover:underline">
+                                                <div className="flex items-center justify-start mt-0  cursor-pointer hover:underline">
                                                     <img
                                                         src="/images/calender_icon.svg"
                                                         alt="Description of your image"
                                                         className="w-[20px] h-[20px] object-stretch" />
-                                                    <p className="mb-[2px] ml-2 text-[16px] font-normal text-red-500 dark:text-gray-400">Tuesday, Mar 12, 1:00 PM</p>
+                                                    <p className="mb-[2px] ml-1 text-[16px] font-normal text-red-500 dark:text-gray-400">{dayjs(order?.event?.date, 'YYYY-MM-DD').format("MMM D, YYYY")}, {order?.event?.start_time}</p>
                                                 </div>
 
                                                 <div className="flex items-center justify-start mt-2  cursor-pointer hover:underline">
@@ -104,11 +104,11 @@ export default function OrderCard({ label }: any) {
                                                         src="/images/location_icon.svg"
                                                         alt="Description of your image"
                                                         className="w-[20px] h-[20px] object-stretch" />
-                                                    <p className="ml-2 text-[14px] font-normal text-black dark:text-gray-400">Universirty Of Alberta</p>
+                                                    <p className="ml-2 text-[14px] font-normal text-black dark:text-gray-400">{order?.event?.address}</p>
                                                 </div>
                                             </div>
 
-                                            <div className='w-[220px] hidden md:flex ml-auto mt-4 mr-4 bg-gray-200 h-[50px] rounded-lg p-4 justify-center items-center cursor-pointer hover:underline hover:bg-blue-300'>
+                                            <div onClick={() => goToDetails(order)} className='w-[220px] hidden md:flex ml-auto mt-4 mr-4 bg-gray-200 h-[50px] rounded-lg p-4 justify-center items-center cursor-pointer hover:underline hover:bg-blue-300'>
                                                 <span className="mb-0 text-[12px] font-bold text-gray-700 dark:text-gray-400">View Order Details</span>
 
                                             </div>
@@ -130,7 +130,7 @@ export default function OrderCard({ label }: any) {
                                                 </div>
                                                 <div className='flex flex-col items-start ml-[14px]'>
                                                     <span className="text-[14px] text-gray-500">Order ID</span>
-                                                    <span className="text-[12px]">16AJPY</span>
+                                                    <span className="text-[12px]">{order?.id}</span>
                                                 </div>
                                             </div>
 
@@ -145,7 +145,7 @@ export default function OrderCard({ label }: any) {
                                                 </div>
                                                 <div className='flex flex-col items-start ml-[14px]'>
                                                     <span className="text-[14px] text-gray-500">Total Tickets</span>
-                                                    <span className="text-[12px]">1</span>
+                                                    <span className="text-[12px]">{order?.ticket_number}</span>
                                                 </div>
                                             </div>
 
@@ -160,7 +160,7 @@ export default function OrderCard({ label }: any) {
                                                 </div>
                                                 <div className='flex flex-col items-start ml-[14px]'>
                                                     <span className="text-[14px] text-gray-500">Paid Amound</span>
-                                                    <span className="text-[12px]">CAD $10</span>
+                                                    <span className="text-[12px]">CAD ${order?.total_cost}</span>
 
                                                 </div>
                                             </div>

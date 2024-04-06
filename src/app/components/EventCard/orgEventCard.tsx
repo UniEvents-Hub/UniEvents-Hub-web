@@ -72,7 +72,7 @@ export default function OrgEventCard({ label, events }: any) {
                                         <div className="w-[60%] flex md:flex-row flex-col">
                                             <img
                                                 onClick={() => goToDetails(event)}
-                                                className="w-[112px] h-full rounded-[2px] object-stretch"
+                                                className="w-[112px] h-full rounded-[2px] object-cover"
                                                 src={event.banner ? `${Urls.BASE_URL}${event.banner}` : '/images/event_banner.jpeg'} alt="" />
                                             <div className='md:w-[70%] w-[100%] ml-6 mt-4'>
                                                 <a onClick={() => goToDetails(event)}>
@@ -82,7 +82,7 @@ export default function OrgEventCard({ label, events }: any) {
                                                     <img
                                                         src="/images/calender_icon.svg"
                                                         alt="Description of your image"
-                                                        className="w-[20px] h-[20px] object-stretch" />
+                                                        className="w-[20px] h-[20px] object-cover" />
                                                     <p className="mb-[2px] ml-2 text-[14px] font-normal text-red-500 dark:text-gray-400">{event?.date}, {event?.start_time}</p>
                                                 </div>
 
@@ -90,7 +90,7 @@ export default function OrgEventCard({ label, events }: any) {
                                                     <img
                                                         src="/images/location_icon.svg"
                                                         alt="Description of your image"
-                                                        className="w-[20px] h-[20px] object-stretch" />
+                                                        className="w-[20px] h-[20px] object-cover" />
                                                     <p className="ml-2 text-[14px] font-normal text-black dark:text-gray-400">{event?.address}</p>
                                                 </div>
                                             </div>

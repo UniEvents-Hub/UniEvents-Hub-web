@@ -171,14 +171,12 @@ export const PUT = async (url: any, token: any, params: any, success: any, error
   }
 };
 
-export const DELETE = async (url: any, token: any, params: any, success: any, error: any) => {
+export const DELETE = async (url: any, params: any, success: any, error: any) => {
   try {
-    const config = httpHelper.getHeader(token);
+    let token = localStorage.getItem(TokenConstants.ACCESS_TOKEN);
+     const config = httpHelper.getHeader(token);
     if (params) {
-      config.data = {
-        userId: params.userId,
-        teamId: params.teamId,
-      };
+      config.data = params
     }
     const response = await axios.delete(url, config);
     if (success) {

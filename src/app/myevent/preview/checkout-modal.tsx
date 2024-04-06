@@ -40,11 +40,12 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, amount = 1, quan
     const submitButtonClasses = `w-[170px] bg-red-500 text-white text-[14px] p-2 rounded-[10px] mb-6 mt-6 hover:bg-white hover:text-black hover:border hover:border-gray-300`;
 
     useEffect(() => {
+        console.log('userData', userData)
         setFormData({
-            firstName: userData?.firstName ?? "",
-            lastName: userData?.lastName ?? "",
-            email: userData?.email ?? "",
-            phoneNumber: userData?.phoneNumber ?? "",
+            firstName: userData?.user?.first_name ?? "",
+            lastName: userData?.user?.last_name ?? "",
+            email: userData?.user?.email ?? "",
+            phoneNumber: userData?.profile?.phone_number ?? "",
         });
     }, [userData]);
 

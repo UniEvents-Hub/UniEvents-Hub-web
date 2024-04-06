@@ -13,8 +13,11 @@ const Urls = {
     CREATE_EVENT: 'event/eventcreate/',
     UPDATE_EVENT: 'event/eventupdate/',
     SAVED_EVENT: 'event/eventsave/',
+    UN_SAVED_EVENT: 'event/eventunsave/',
     GET_ORG_EVENTS: 'event/userspecificevent/',
     GET_FAVS_EVENTS: 'event/getsaved/',
+    BUY_TICKET: 'event/buyticket/',
+    GET_USER_ORDERS: 'event/getticket/',
     REFRESH_TOKEN: 'refreshToken', 
   };
   

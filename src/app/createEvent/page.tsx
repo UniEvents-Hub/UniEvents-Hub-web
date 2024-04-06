@@ -13,15 +13,16 @@ import TagList from './tags';
 import * as _ from "lodash";
 import DatePicker from "react-datepicker";
 import TimePicker from 'react-time-picker';
-import dayjs from 'dayjs';
-import advancedFormat from 'dayjs/plugin/advancedFormat';
-import { EditorState, convertToRaw } from 'draft-js';
+import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs'
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 import "react-datepicker/dist/react-datepicker.css";
+
+import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
 dayjs.extend(advancedFormat);
 
 import { doCreateEvent, getEventDetails, doUpdateEvent } from '@/app/services/Event/event-service';
@@ -41,6 +42,7 @@ function CreateEventPage(props: any) {
     const [filename, setFilename] = useState('');
     const [showMenu, setShowMenu] = useState(false);
     const [title, setTitle] = useState("");
+    const [description, setDescription] = useState('');
     const [selectedCategory, setSelectedCategory] = useState("");
     const [showStartDate, setShowStartDate] = useState(false);
     const [startDate, setStartDate] = useState(null);
@@ -108,6 +110,15 @@ function CreateEventPage(props: any) {
                         //     console.log('eventDetails.event_type', eventDetails.event_type)
                         //     setSelectedCategory(eventDetails.event_type)
                         // }
+                        if (eventDetails?.description) {
+                            setEditorState(eventDetails?.description)
+                            const contentBlock = htmlToDraft(eventDetails?.description);
+                            if (contentBlock) {
+                                const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
+                                const editorState = EditorState.createWithContent(contentState);
+                                setEditorState(editorState)
+                            }
+                        }
                         if (eventDetails.ticket_type) {
                             const savedType = ticketType.find(type => type.name === eventDetails.ticket_type);
                             if (savedType) {
@@ -214,10 +225,13 @@ function CreateEventPage(props: any) {
         }
     };
 
-    const onEditorStateChange = (editorState: any) => {
-        console.log('editorState', editorState.getCurrentContent())
+    const onEditorStateChange = (editorStateValue: any) => {
+        console.log('onEditorStateChange', editorStateValue.getCurrentContent())
 
-        setEditorState(editorState)
+        setEditorState(editorStateValue)
+        let deshtml = draftToHtml(convertToRaw(editorStateValue.getCurrentContent()))
+        console.log('des', deshtml)
+        setDescription(deshtml);
     };
 
     const handleStartDateClick = (e: any) => {
@@ -382,7 +396,7 @@ function CreateEventPage(props: any) {
             longitude: selectedCoordinates ? selectedCoordinates[1] : 53.5213,
             latitude: selectedCoordinates ? selectedCoordinates[0] : -113.521,
             address: query,
-            description: "This is a music event",
+            description: description,
             ticket_price: selectedTicketType !== "Free" ? ticketPrice : 0.00,
             ticket_type: selectedTicketType,
             sharable_link: "https://github.com/bobby-didcoding/drf_course/tree/module_1",
@@ -788,16 +802,15 @@ function CreateEventPage(props: any) {
 
                             <span className="text-[12px] text-gray-700">Add more details about your event and include what people can expect if they attend.</span>
 
-                            <div className="border-[1px] border-gray-90">
-                                {/* <Editor
+                            <div className="border-[1px] border-gray-90 mt-4">
+                                <Editor
+                                    editorState={editorState}
+                                    wrapperClassName="wrapper-class"
+                                    editorClassName="editor-class"
+                                    toolbarClassName="toolbar-class"
+                                    onEditorStateChange={onEditorStateChange}
 
-                                editorState={editorState}
-                                wrapperClassName="wrapper-class"
-                                editorClassName="editor-class"
-                                toolbarClassName="toolbar-class"
-                                onEditorStateChange={onEditorStateChange}
-
-                            /> */}
+                                />
                                 {/* <textarea
                                 disabled
                                 value={draftToHtml(convertToRaw(editorState.getCurrentContent()))}

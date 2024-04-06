@@ -11,3 +11,8 @@ export const doUpdateUser = async (user_id: any, params: any, success: any, erro
     let url = `${Urls.BASE_URL}${Urls.GET_USER}/${user_id}/`; 
    return GET(url, success, error);
  };
+
+ export const getUserOrders = async (user_id: any, success: any, error: any) => {
+  let url = `${Urls.BASE_URL}${Urls.GET_USER_ORDERS}?user_id=${user_id}`; 
+ return GET(url, success, error);
+};
