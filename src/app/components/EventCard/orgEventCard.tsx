@@ -7,6 +7,10 @@ import { AppDispatch, useAppSelector } from "@/app/redux/store";
 import ShareModal from "./share-modal"
 import Image from 'next/image';
 import Urls from '@/app/Networking/urls';
+import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import { formattedAMPMTime } from '@/app/utils/utility-function';
+dayjs.extend(advancedFormat);
 
 
 
@@ -83,7 +87,7 @@ export default function OrgEventCard({ label, events }: any) {
                                                         src="/images/calender_icon.svg"
                                                         alt="Description of your image"
                                                         className="w-[20px] h-[20px] object-cover" />
-                                                    <p className="mb-[2px] ml-2 text-[14px] font-normal text-red-500 dark:text-gray-400">{event?.date}, {event?.start_time}</p>
+                                                    <p className="mb-[2px] ml-2 text-[14px] font-normal text-red-500 dark:text-gray-400">{dayjs(event?.date, 'YYYY-MM-DD').format("MMM D, YYYY")}, {formattedAMPMTime(event?.start_time)}</p>
                                                 </div>
 
                                                 <div className="flex items-center justify-start mt-2 mb-4  cursor-pointer hover:underline">
@@ -101,11 +105,11 @@ export default function OrgEventCard({ label, events }: any) {
                                         <div className="w-[40%] flex md:flex-row flex-col justify-start items-start mt-4 gap-10">
                                             <div className='flex flex-col items-start ml-[14px]'>
                                                 <span className="text-[16px] text-bold text-black">Sold</span>
-                                                <span className="text-[12px] mt-2">1/10</span>
+                                                <span className="text-[12px] mt-2">{event?.total_tickets_remaining} / {event?.total_tickets}</span>
                                             </div>
                                             <div className='flex flex-col items-start ml-[14px]'>
                                                 <span className="text-[16px] text-bold text-black">Gross</span>
-                                                <span className="text-[12px] mt-2">CA$10.00</span>
+                                                <span className="text-[12px] mt-2">{event?.ticket_type === "Free" ? "Free" : `CAD$${event?.ticket_price}`}</span>
                                             </div>
                                             <div className='flex flex-col items-start ml-[14px]'>
                                                 <span className="text-[16px] text-bold text-black">Status</span>

@@ -10,11 +10,15 @@ import EventCard from "@/app/components/EventCard/eventCard"
 import MapView from '@/app/components/MapComponent/Map';
 import CheckoutModal from "./checkout-modal"
 import ShareModal from "../components/EventCard/share-modal";
-import { getEvents, getEventDetails, doSaveEvent, doUnSaveEvent, getFavouritesEvents } from '@/app/services/Event/event-service';
+import { getEvents, getEventDetails, doSaveEvent, doUnSaveEvent, getFavouritesEvents, checkEventIsSaved } from '@/app/services/Event/event-service';
 import Loader from '@/app/components/Loader';
 import SuccessToast from '@/app/components/common/successToast';
 import { TokenConstants } from '@/app/utils/constants';
 import Urls from '@/app/Networking/urls';
+import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import { formattedAMPMTime } from '@/app/utils/utility-function';
+dayjs.extend(advancedFormat);
 
 function EventDetailsPage() {
     const [backgroundGradiant, setBackgroundGradient] = useState<string>("all-gradient-background");
@@ -29,6 +33,7 @@ function EventDetailsPage() {
     const [eventDetails, setEventDetails] = useState<any>(null);
     const [shareLink, setShareLink] = useState<any>('')
     const searchParams = useSearchParams();
+    const router = useRouter();
 
     useEffect(() => {
         const evet_id = searchParams?.get("eventId");
@@ -50,7 +55,8 @@ function EventDetailsPage() {
                     let link = `${window.location.origin}/eventDetails?eventId=${success.data[0].id}`
                     setShareLink(link)
 
-                    getFavEvents(success.data[0].id)
+                    // getFavEvents(success.data[0].id)
+                    checkSavedEvent(success.data[0].id)
                 }
                 setTimeout(() => {
                     setLoading(false);
@@ -63,6 +69,39 @@ function EventDetailsPage() {
                 }, 2000)
             },
         );
+    }
+
+    const checkSavedEvent = (event_id: any) => {
+        let user_id = localStorage.getItem(TokenConstants.USER_INFO);
+
+        checkEventIsSaved(
+            event_id,
+            (success: any) => {
+                console.log('checkEventIsSaved success', success);
+                setTimeout(() => {
+                    setLoading(false)
+                }, 2000)
+                if (success && success.data) {
+                    if (success?.data?.saved) {
+                        setIsSaved(true)
+                    } else {
+                        setIsSaved(false)
+                    }
+                    // let find_fav = success.data.filter((obj: any) => obj.event.id === event_id)
+                    // console.log('find_fav', find_fav)
+                    // if (find_fav) {
+                    //     setIsSaved(true)
+                    // }
+                }
+            },
+            (error: any) => {
+                console.log('login error', error);
+                setTimeout(() => {
+                    setLoading(false)
+                }, 2000)
+            },
+        );
+
     }
 
     const getFavEvents = (event_id: any) => {
@@ -168,6 +207,57 @@ function EventDetailsPage() {
         );
     }
 
+    const hasEventEnded = (eventDate: any) => {
+        const currentDate = new Date().toISOString().split('T')[0]; // Get current date as YYYY-MM-DD
+        return eventDate < currentDate;
+    };
+
+    const renderStatus = (event: any) => {
+
+
+        if (hasEventEnded(event?.date)) {
+            return (
+                <div className='w-[102px] h-[30px] mt-[-16px] ml-[-2px] mb-[8px] bg-yellow-500 rounded-[10px] flex justify-center items-center'>
+                    <span className='text-[14px] text-white'>Event ended</span>
+                </div>
+            )
+        }
+        else {
+            if (event.event_status === "cancelled") {
+                return (
+                    <div className='w-[100px] h-[30px] mt-[-16px] ml-[-2px] mb-[8px] bg-red-500 rounded-[10px] flex justify-center items-center'>
+                        <span className='text-[14px] text-white'>Cancelled</span>
+                    </div>
+                )
+            }
+            if (event.event_status === "publish") {
+                if (event?.ticket_type === "Free") {
+                    return (
+                        <div className='w-[100px] h-[30px] mt-[-16px] ml-[-2px] mb-[8px] bg-blue-500 rounded-[6px] flex justify-center items-center'>
+                            <span className='text-[14px] text-white'>Going Fast</span>
+                        </div>
+                    )
+                }
+                else {
+                    return (
+                        <div className='w-[100px] h-[30px] mt-[-16px] ml-[-2px] mb-[8px] bg-green-500 rounded-[6px] flex justify-center items-center'>
+                            <span className='text-[14px] text-white'>On Sale</span>
+                        </div>
+                    )
+                }
+
+            }
+            if (event.event_status === "SoldOut") {
+                return (
+                    <div className='w-[100px] h-[30px] mt-[-16px] ml-[-2px] mb-[8px] bg-red-500 rounded-[10px] flex justify-center items-center'>
+                        <span className='text-[14px] text-white'>Sold Out</span>
+                    </div>
+                )
+            }
+        }
+
+    }
+
     if (loading)
         return (
             <>
@@ -183,7 +273,17 @@ function EventDetailsPage() {
                     <>
 
                         <div className={`flex flex-col pl-[300px] pr-[100px] w-full overflow-hidden no-scrollbar ${backgroundGradiant} `}>
-                            <div className={`h-[400px] w-full rounded-[20px] mt-10 culture-gradient-background opacity-100`}>
+                            <div className="w-[20%] bg-opacity-100 px-[0px] pt-10  ">
+                                <div onClick={() => router.back()}
+                                    className="flex gap-4 cursor-pointer">
+                                    <img
+
+                                        className="w-[24px] h-[24px]"
+                                        src={"/images/back-button-icon.svg"} alt="" />
+                                    <span className="text-[16px] text-blue-400">Back to events</span>
+                                </div>
+                            </div>
+                            <div className={`h-[400px] w-full rounded-[20px] mt-4 culture-gradient-background opacity-100`}>
                                 <img
                                     src={eventDetails.banner ? `${Urls.BASE_URL}${eventDetails.banner}` : '/images/event_banner.jpeg'}
                                     alt="Description of your image"
@@ -192,8 +292,11 @@ function EventDetailsPage() {
 
                             <div className="w-full flex items-center">
                                 <div className="md:pt-10 pt-20 w-[90%] ">
+                                    {
+                                        renderStatus(eventDetails)
+                                    }
                                     <h5 className="mb-2 text-[26px] font-bold tracking-tight text-gray-900 dark:text-white">{eventDetails?.title}</h5>
-                                    <p className="mb-[6px] text-[18px] font-normal text-black dark:text-gray-400">{eventDetails?.date}, {eventDetails?.start_time}</p>
+                                    <p className="mb-[6px] text-[18px] font-normal text-black dark:text-gray-400">{dayjs(eventDetails?.date, 'YYYY-MM-DD').format("MMM D, YYYY")}, {formattedAMPMTime(eventDetails?.start_time)}</p>
 
                                     <div className="flex items-center justify-start mt-2">
                                         <img
@@ -242,84 +345,88 @@ function EventDetailsPage() {
                             <hr className="mr-0 mt-4 h-[2px] border-t-0 bg-gray-200" />
 
 
-                            <div className="w-full flex items-center">
+                            <div className="w-full flex items-start">
                                 <div className="flex flex-col items-start mt-4 w-[60%] ">
                                     <h5 className="mb-2 text-[26px] font-bold tracking-tight text-gray-900 dark:text-white">About This Event</h5>
                                     <div className="flex flex-col mb-[6px] gap-4 text-[14px] font-normal text-gray-700 dark:text-gray-400">
-                                        <span>Registration and lunch served: 11:45AM</span>
-                                        <span>Presentation: 12:00PM-1:00PM</span>
-                                        <p>
-                                            {eventDetails?.description}
-                                        </p>
+
+                                        <div dangerouslySetInnerHTML={{ __html: eventDetails?.description }} />
                                         <span>Please join us as we listen, learn and discuss.</span>
                                     </div>
 
                                 </div>
 
-                                <div className="w-[30%] h-full flex justify-end items-end ml-auto">
-                                    <div className="w-[300px] h-full py-4 px-4 flex flex-col justify-end border-[1px] rounded-[10px] border-gray-300">
-
-                                        {
-                                            eventDetails?.ticket_type === "Paid" ?
-                                                <div className="flex w-[260px] justify-between gap-2 ">
-                                                    <div className="flex"></div>
-                                                    <div className="flex gap-[10px]">
-                                                        <div onClick={() => {
-                                                            if (ticketCount > 1) { setTicketCount(ticketCount - 1) }
-                                                        }}
-                                                            className="w-[30px] h-[30px] cursor-pointer rounded-[6px] bg-blue-600 flex justify-center items-center">
-                                                            <span className="text-white text-[20px]"> - </span>
-                                                        </div>
-                                                        <span className="text-black text-[20px]"> {ticketCount} </span>
-                                                        <div onClick={() => {
-                                                            setTicketCount(ticketCount + 1)
-                                                        }}
-                                                            className="w-[30px] h-[30px] rounded-[6px] cursor-pointer bg-blue-600 flex justify-center items-center">
-                                                            <span className="text-white text-[20px]"> + </span>
-                                                        </div>
-                                                    </div>
-
-                                                </div> : null
-                                        }
+                                {
+                                    !hasEventEnded(eventDetails?.date) ?
 
 
-                                        {
-                                            eventDetails?.ticket_type === "Free" ?
-                                                <span className="font-bold text-[18px] text-center mt-6">Free</span> : null
-                                        }
+                                        <div className="w-[30%] h-full flex justify-end items-end ml-auto mt-6">
+                                            <div className="w-[300px] h-full py-4 px-4 flex flex-col justify-end border-[1px] rounded-[10px] border-gray-300">
 
-                                        {
-                                            eventDetails?.ticket_type === "Donation" ?
-                                                <span className="font-bold text-[18px] text-center mt-6">Donation</span> : null
-                                        }
+                                                {
+                                                    eventDetails?.ticket_type === "Paid" ?
+                                                        <div className="flex w-[260px] justify-between gap-2 ">
+                                                            <div className="flex"></div>
+                                                            <div className="flex gap-[10px]">
+                                                                <div onClick={() => {
+                                                                    if (ticketCount > 1) { setTicketCount(ticketCount - 1) }
+                                                                }}
+                                                                    className="w-[30px] h-[30px] cursor-pointer rounded-[6px] bg-blue-600 flex justify-center items-center">
+                                                                    <span className="text-white text-[20px]"> - </span>
+                                                                </div>
+                                                                <span className="text-black text-[20px]"> {ticketCount} </span>
+                                                                <div onClick={() => {
+                                                                    setTicketCount(ticketCount + 1)
+                                                                }}
+                                                                    className="w-[30px] h-[30px] rounded-[6px] cursor-pointer bg-blue-600 flex justify-center items-center">
+                                                                    <span className="text-white text-[20px]"> + </span>
+                                                                </div>
+                                                            </div>
 
-                                        {
-                                            eventDetails?.ticket_type === "Paid" ?
-                                                <span className="text-left text-[16px] mt-6">CAD ${ticketCount * ticketPrice}</span> : null
-                                        }
+                                                        </div> : null
+                                                }
 
 
-                                        {
-                                            eventDetails?.ticket_type === "Free" ?
-                                                <button onClick={() => setIsCheckoutModalShow(true)}
-                                                    className="h-[30px] w-full mx-[0px] mt-2 bg-red-600 rounded-[10px] items-center">
-                                                    <span className="text-[14px] text-white">Reserve a spot</span>
-                                                </button> :
-                                                <button onClick={() => setIsCheckoutModalShow(true)}
-                                                    className="h-[30px] w-full mx-[0px] mt-2 bg-red-600 rounded-[10px] items-center">
-                                                    <span className="text-[14px] text-white"> Check out for CAD ${ticketCount * ticketPrice} </span>
-                                                </button>
-                                        }
+                                                {
+                                                    eventDetails?.ticket_type === "Free" ?
+                                                        <span className="font-bold text-[18px] text-center mt-6">Free</span> : null
+                                                }
 
-                                    </div>
+                                                {
+                                                    eventDetails?.ticket_type === "Donation" ?
+                                                        <span className="font-bold text-[18px] text-center mt-6">Donation</span> : null
+                                                }
 
-                                </div>
+                                                {
+                                                    eventDetails?.ticket_type === "Paid" ?
+                                                        <span className="text-left text-[16px] mt-6">CAD ${ticketCount * ticketPrice}</span> : null
+                                                }
+
+
+                                                {
+                                                    eventDetails?.ticket_type === "Free" ?
+                                                        <button onClick={() => setIsCheckoutModalShow(true)}
+                                                            className="h-[30px] w-full mx-[0px] mt-2 bg-red-600 rounded-[10px] items-center">
+                                                            <span className="text-[14px] text-white">Reserve a spot</span>
+                                                        </button> :
+                                                        <button onClick={() => setIsCheckoutModalShow(true)}
+                                                            className="h-[30px] w-full mx-[0px] mt-2 bg-red-600 rounded-[10px] items-center">
+                                                            <span className="text-[14px] text-white"> Check out for CAD ${ticketCount * ticketPrice} </span>
+                                                        </button>
+                                                }
+
+                                            </div>
+
+                                        </div> : null
+                                }
+
+
                             </div >
 
-                            {/* <div className="flex flex-col items-start mt-4 w-[60%] mb-20">
+                            <div className="flex flex-col items-start mt-4 w-[60%] mb-20">
                                 <h1 className="mb-2 text-[26px] font-bold text-gray-900 dark:text-white">Location</h1>
                                 <MapView latitude={eventDetails?.latitude} longitude={eventDetails?.longitude} />
-                            </div> */}
+                            </div>
                         </div >
 
                         {isCheckoutModalShow ? (

@@ -13,6 +13,10 @@ import { getEvents, getEventDetails, doUpdateEvent, doSaveEvent } from '@/app/se
 import Loader from '@/app/components/Loader';
 import Urls from '@/app/Networking/urls';
 import MessageModal from '@/app/components/common/messageModal';
+import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import { formattedAMPMTime } from '@/app/utils/utility-function';
+dayjs.extend(advancedFormat);
 
 function EventPreviewPage() {
     const router = useRouter();
@@ -81,8 +85,7 @@ function EventPreviewPage() {
                     setMessageType('success')
                     if (success && success.data) {
                         getEventInfo(success.data.id)
-                        // router.push(`/myevent/preview?eventId=${success.data.id}`)
-                        // router.push('/organizations/events')
+                        router.push('/organizations/events')
                     }
                     setTimeout(() => {
                         setLoading(false);
@@ -126,13 +129,13 @@ function EventPreviewPage() {
                                 <img
                                     src={eventDetails.banner ? `${Urls.BASE_URL}${eventDetails.banner}` : "/images/battle_event.jpeg"}
                                     alt="Description of your image"
-                                    className="w-full px-[100px] h-[400px] rounded-[20px] object-stretch" />
+                                    className="w-full px-[100px] h-[400px] rounded-[20px] object-cover" />
                             </div>
 
                             <div className="w-full flex items-center">
                                 <div className="md:pt-10 pt-20 w-[90%] ">
                                     <h5 className="mb-2 text-[26px] font-bold tracking-tight text-gray-900 dark:text-white">{eventDetails?.title}</h5>
-                                    <p className="mb-[6px] text-[18px] font-normal text-black dark:text-gray-400">{eventDetails?.date}, {eventDetails?.start_time}</p>
+                                    <p className="mb-[6px] text-[18px] font-normal text-black dark:text-gray-400">{dayjs(eventDetails?.date, 'YYYY-MM-DD').format("MMM D, YYYY")}, {formattedAMPMTime(eventDetails?.start_time)}</p>
 
                                     <div className="flex items-center justify-start mt-2">
                                         <img
@@ -208,23 +211,23 @@ function EventPreviewPage() {
                                 </div>
                             </div >
 
-                            <div className="flex flex-col items-start mt-4 w-[60%] mb-20">
+                            <div className="flex flex-col items-start mt-4 w-[60%] mb-20" style={{ zIndex: 1000 }}>
                                 <h1 className="mb-2 text-[26px] font-bold text-gray-900 dark:text-white">Location</h1>
                                 <MapView latitude={eventDetails?.latitude} longitude={eventDetails?.longitude} />
                             </div>
                         </div >
 
-                        <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 flex justify-end items-end">
+                        <div className="fixed bottom-0 left-[200px] w-full bg-white border-t border-gray-200 p-4 flex justify-end items-end" style={{ zIndex: 1000 }}>
                             <button
                                 onClick={() => doEditEvent()}
-                                className="bg-red-600 hover:bg-blue-600 text-white font-bold py-2 px-4 mr-10 rounded">
+                                className={`bg-red-600 hover:bg-blue-600 text-white font-bold py-2 px-4 ${eventDetails && eventDetails?.event_status !== "publish" ? 'mr-[50px]' : 'mr-[250px]'} rounded`}>
                                 Edit event
                             </button>
                             {
                                 eventDetails && eventDetails?.event_status !== "publish" ?
                                     <button
                                         onClick={() => handleUpdateEvent()}
-                                        className="bg-[#007a33] hover:bg-blue-600 text-[#f2cd00] font-bold py-2 px-4 rounded">
+                                        className="bg-[#007a33] hover:bg-blue-600 text-[#f2cd00] font-bold py-2 px-4 mr-[250px] rounded">
                                         Publish event
                                     </button> : null
                             }

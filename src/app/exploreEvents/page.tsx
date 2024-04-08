@@ -8,7 +8,8 @@ import EventCard from "@/app/components/EventCard/eventCard"
 import Loader from '@/app/components/Loader';
 import { TokenConstants } from '@/app/utils/constants';
 import { getUserInfo } from '@/app/services/User/user-service';
-import { getEvents, getFilteredEvents } from '@/app/services/Event/event-service';
+import { getEvents, getFilteredEvents, checkEventIsSaved } from '@/app/services/Event/event-service';
+import { formattedAMPMTime } from '@/app/utils/utility-function';
 
 function DashboardPage() {
     const [backgroundGradiant, setBackgroundGradient] = useState<string>("all-gradient-background");
@@ -21,78 +22,147 @@ function DashboardPage() {
     useEffect(() => {
         // console.log('accessToken', accessToken)
         let token = localStorage.getItem(TokenConstants.ACCESS_TOKEN);
-        console.log('layout token', token);
+
         getAllEvents()
-
-
     }, []);
 
-    const getAllEvents = () => {
+    const getAllEvents = async () => {
         let user_id = localStorage.getItem(TokenConstants.USER_INFO);
 
         let event_type = 'all'
         getFilteredEvents(
             event_type,
-            (success: any) => {
+            async (success: any) => {
                 console.log('getFilteredEvents success', success);
                 setTimeout(() => {
                     setLoading(false)
-                }, 2000)
+                }, 500)
                 if (success) {
-                    setAllEvents(success.data)
-                    setFilteredEvents(success.data)
+                    if (success.data.length > 0) {
+                        let modifiedEvent = [] as any;
+                        for (let i = 0; i < success.data.length; i++) {
+                            if (success.data[i]?.event_status !== null && (success.data[i]?.event_status !== 'draft' || success.data[i]?.event_status !== 'unpublish')) {
+                                let isSaved = await checkSavedEvent(success.data[i].id);
+                                success.data[i].isSaved = isSaved
+                                modifiedEvent.push(success.data[i])
+                            }
+
+                        }
+                        setAllEvents(modifiedEvent)
+                        setFilteredEvents(modifiedEvent)
+                    }
+
                 }
             },
             (error: any) => {
                 console.log('getFilteredEvents error', error);
                 setTimeout(() => {
                     setLoading(false)
-                }, 2000)
+                }, 1000)
             },
         );
 
-        // getEvents(
-        //     (success: any) => {
-        //         console.log('getEvents success', success);
-        //         setTimeout(() => {
-        //             setLoading(false)
-        //         }, 2000)
-        //         if (success) {
-        //             setAllEvents(success.data)
-        //             setFilteredEvents(success.data)
-        //         }
-        //     },
-        //     (error: any) => {
-        //         console.log('login error', error);
-        //         setTimeout(() => {
-        //             setLoading(false)
-        //         }, 2000)
-        //     },
-        // );
+    }
+
+    const checkSavedEvent = async (event_id: any): Promise<boolean> => {
+
+        return new Promise<boolean>((resolve, reject) => {
+            checkEventIsSaved(
+                event_id,
+                (success: any) => {
+                    if (success && success.data) {
+                        resolve(!!success.data.saved);
+                    } else {
+                        resolve(false);
+                    }
+                },
+                (error: any) => {
+                    console.log('login error', error);
+                    resolve(false);
+                },
+            );
+        });
 
     }
 
-    const getEventsByCategory = (type: string) => {
+    const getEventsByCategory = async (type: string) => {
         let user_id = localStorage.getItem(TokenConstants.USER_INFO);
         let event_type = type
         getFilteredEvents(
             event_type,
-            (success: any) => {
-                console.log('getFilteredEvents success', success);
+            async (success: any) => {
+                // console.log('getFilteredEvents success', success);
                 setTimeout(() => {
                     setLoading(false)
-                }, 2000)
+                }, 1000)
                 if (success) {
-                    setFilteredEvents(success.data)
+                    let modifiedEvent = [] as any;
+                    for (let i = 0; i < success.data.length; i++) {
+                        if (success.data[i]?.event_status !== null && (success.data[i]?.event_status !== 'draft' || success.data[i]?.event_status !== 'unpublish')) {
+                            let isSaved = await checkSavedEvent(success.data[i].id);
+                            success.data[i].isSaved = isSaved
+                            modifiedEvent.push(success.data[i])
+                        }
+
+                    }
+                    setFilteredEvents(modifiedEvent)
                 }
             },
             (error: any) => {
                 console.log('getFilteredEvents error', error);
                 setTimeout(() => {
                     setLoading(false)
-                }, 2000)
+                }, 1000)
             },
         );
+
+    }
+
+    const filterEvents = (filterValue: any) => {
+        const currentDate = new Date(); // Get current date
+        const today = currentDate.toISOString().split('T')[0]; // Format current date as YYYY-MM-DD
+        const nextWeek = new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // Next week date
+        const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1).toISOString().split('T')[0]; // Next month date
+        const thisYear = `${currentDate.getFullYear()}-12-31`; // End of current year
+        let events = allEvents;
+        // Filter events based on the chosen filter value
+        switch (filterValue) {
+            case 'all':
+                return allEvents;
+            case 'today':
+                return events.filter(event => event.date === today);
+            case 'tomorrow':
+                const tomorrow = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                return events.filter(event => event.date === tomorrow);
+            case 'thisWeek':
+                return events.filter(event => event.date >= today && event.date <= nextWeek);
+            case 'thisWeekend':
+                // Implement logic to determine the weekend based on current date
+                // Example: weekend = { startDate: 'YYYY-MM-DD', endDate: 'YYYY-MM-DD' }
+                const weekend = { startDate: '2024-04-06', endDate: '2024-04-07' }; // Example weekend dates
+                return events.filter(event => event.date >= weekend.startDate && event.date <= weekend.endDate);
+            case 'nextWeek':
+                return events.filter(event => event.date > nextWeek && event.date <= nextMonth);
+            case 'thisMonth':
+                return events.filter(event => event.date >= today && event.date <= nextMonth);
+            case 'nextMonth':
+                return events.filter(event => event.date > nextMonth && event.date <= thisYear);
+            case 'thisYear':
+                return events.filter(event => event.date >= today && event.date <= thisYear);
+            default:
+                return events; // Return all events if no filter value matches
+
+
+        }
+
+    };
+
+    const getDateFilterValue = (dateobj: any) => {
+        if (dateobj) {
+            let filteredEvents = filterEvents(dateobj.slug)
+            console.log('filteredEvents', filteredEvents)
+            setFilteredEvents(filteredEvents);
+        }
 
     }
 
@@ -107,14 +177,19 @@ function DashboardPage() {
     const handleChange = (e: any) => {
         const query = e.target.value.toLowerCase();
         setSearchInput(query);
-        if (query) { }
         const eventFilteredData = allEvents.filter(event =>
             event?.title.toLowerCase().includes(query)
         );
 
         if (eventFilteredData && eventFilteredData.length > 0 && selectedCategory) {
-            const filterByCategoryEvents = eventFilteredData.filter(event => event.event_type === selectedCategory?.slug);
-            setFilteredEvents(filterByCategoryEvents);
+            if (selectedCategory?.slug === 'all') {
+                setFilteredEvents(eventFilteredData);
+            }
+            else {
+                const filterByCategoryEvents = eventFilteredData.filter(event => event.event_type === selectedCategory?.slug);
+                setFilteredEvents(filterByCategoryEvents);
+            }
+
         }
         else {
             setFilteredEvents(eventFilteredData);
@@ -177,6 +252,7 @@ function DashboardPage() {
                         <div>
                             <UpcomingList
                                 label={"EVENTS"}
+                                getDateFilterInfo={getDateFilterValue}
                             />
                         </div>
                         <div>

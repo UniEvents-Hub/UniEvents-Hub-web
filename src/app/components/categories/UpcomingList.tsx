@@ -8,18 +8,18 @@ import Image from 'next/image'
 
 
 
-export default function UpcomingList({ label }: any) {
+export default function UpcomingList({ label, getDateFilterInfo }: any) {
     const router = useRouter();
     const [categories, setCategories] = useState<any[]>([,
         { id: 1, name: 'All', slug: 'all', selected: true },
         { id: 2, name: 'Today', slug: 'today', selected: false },
         { id: 3, name: 'Tomorrow', slug: 'tomorrow', selected: false },
-        { id: 4, name: 'This Week', slug: 'this_week', selected: false },
-        { id: 5, name: 'This Weekend', slug: 'this_weekend', selected: false },
-        { id: 6, name: 'Next Week', slug: 'next_week', selected: false },
-        { id: 7, name: 'This Month', slug: 'this_month', selected: false },
-        { id: 8, name: 'Next Month', slug: 'next_month', selected: false },
-        { id: 9, name: 'This Year', slug: 'year', selected: false }]);
+        { id: 4, name: 'This Week', slug: 'thisWeek', selected: false },
+        { id: 5, name: 'This Weekend', slug: 'thisWeekend', selected: false },
+        { id: 6, name: 'Next Week', slug: 'nextWeek', selected: false },
+        { id: 7, name: 'This Month', slug: 'thisMonth', selected: false },
+        { id: 8, name: 'Next Month', slug: 'nextMonth', selected: false },
+        { id: 9, name: 'This Year', slug: 'thisYear', selected: false }]);
     const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
@@ -41,6 +41,7 @@ export default function UpcomingList({ label }: any) {
             const updatedCategories = categories.map((obj) => {
                 if (category.id === obj.id) {
                     obj.selected = true
+                    getDateFilterInfo(obj)
                 }
                 else {
                     obj.selected = false

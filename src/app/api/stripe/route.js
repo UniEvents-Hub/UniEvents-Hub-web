@@ -17,7 +17,8 @@ import { NextResponse, NextRequest } from "next/server";
 export async function POST(request) {
   const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY);
   const { data } = await request.json();
-  const { amount, quantity } = data;
+  console.log('data', data)
+  const { amount, quantity, cancelUrl, successUrl } = data;
   try {
     const date = new Date().toISOString();
     const session = await stripe.checkout.sessions.create({
@@ -29,14 +30,14 @@ export async function POST(request) {
             product_data: {
               name: "INV-" + date,
             },
-            unit_amount: amount * 10 || 10,
+            unit_amount: amount * 100 || 10,
           },
           quantity: quantity,
         },
       ],
       mode: "payment",
-      cancel_url: 'http://localhost:3000',
-      success_url: 'http://localhost:3000/success',
+      cancel_url: cancelUrl,
+      success_url: successUrl,
     });
     const responseBody = JSON.stringify(session);
     console.log('session', session)

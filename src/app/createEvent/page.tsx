@@ -401,6 +401,7 @@ function CreateEventPage(props: any) {
             ticket_type: selectedTicketType,
             sharable_link: "https://github.com/bobby-didcoding/drf_course/tree/module_1",
             total_tickets: totalTicket,
+            total_tickets_remaining: totalTicket,
             availableTicket: availableTicket ? availableTicket : totalTicket
 
         };

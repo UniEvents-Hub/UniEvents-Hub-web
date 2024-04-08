@@ -7,8 +7,12 @@ import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/app/redux/store";
 import Image from 'next/image'
 import Urls from '@/app/Networking/urls';
-import { getFavouritesEvents } from '@/app/services/Event/event-service';
+import { getFavouritesEvents, checkEventIsSaved } from '@/app/services/Event/event-service';
 import { TokenConstants } from '@/app/utils/constants';
+import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import { formattedAMPMTime } from '@/app/utils/utility-function';
+dayjs.extend(advancedFormat);
 
 export default function EventCard({ label, events }: any) {
     const router = useRouter();
@@ -29,29 +33,82 @@ export default function EventCard({ label, events }: any) {
 
     }, []);
 
-    const getFavEvents = (event_id: any) => {
-        let user_id = localStorage.getItem(TokenConstants.USER_INFO);
+    const renderSavedIcon = (event: any) => {
+        return (
+            event.isSaved ?
+                <div className={`h-[40px] w-[40px] rounded-full hover:bg-blue cursor-pointer flex items-center justify-center  border border-gray-300`}>
+                    <img
+                        src="/images/favourite_icon.svg"
+                        alt="Description of your image"
+                        className="w-[20px] h-[20px] object-cover" />
+                </div>
+                :
+                <div className={`h-[40px] w-[40px] rounded-full hover:bg-blue cursor-pointer flex items-center justify-center  border border-gray-300`}>
+                    <img
+                        src="/images/unfavourite_icon.svg"
+                        alt="Description of your image"
+                        className="w-[20px] h-[20px] object-cover" />
+                </div>
 
-        getFavouritesEvents(
-            user_id,
-            (success: any) => {
-                console.log('getFavouritesEvents success', success);
-                if (success && success.data) {
-                    let find_fav = success.data.filter((obj: any) => obj.event.id === event_id)
-                    console.log('find_fav', find_fav)
-                    if (find_fav) {
-                        return true
-                    }
-                    else {
-                        return false
-                    }
+        )
+    }
+
+    const hasEventEnded = (eventDate: any) => {
+        const currentDate = new Date().toISOString().split('T')[0]; // Get current date as YYYY-MM-DD
+        return eventDate < currentDate;
+    };
+
+    const renderStatus = (event: any) => {
+        if (hasEventEnded(event?.date)) {
+            return (
+                <div className='w-[96px] h-[30px] mt-[-16px] ml-[-2px] mb-[8px] bg-yellow-500 rounded-[10px] flex justify-center items-center'>
+                    <span className='text-[14px] text-white'>Event ended</span>
+                </div>
+            )
+        }
+        else {
+
+            if (event.event_status === "cancelled") {
+                return (
+                    <div className='w-[80px] h-[30px] mt-[-16px] ml-[-2px] mb-[8px] bg-red-500 rounded-[10px] flex justify-center items-center'>
+                        <span className='text-[14px] text-white'>Cancelled</span>
+                    </div>
+                )
+            }
+            if (event.event_status === "publish") {
+                if (event?.ticket_type === "Free") {
+                    return (
+                        <div className='w-[90px] h-[30px] mt-[-16px] ml-[-2px] mb-[8px] bg-blue-500 rounded-[6px] flex justify-center items-center'>
+                            <span className='text-[14px] text-white'>Going Fast</span>
+                        </div>
+                    )
                 }
-            },
-            (error: any) => {
-                console.log('login error', error);
-            },
-        );
-        return true;
+                else {
+                    return (
+                        <div className='w-[80px] h-[30px] mt-[-16px] ml-[-2px] mb-[8px] bg-green-500 rounded-[6px] flex justify-center items-center'>
+                            <span className='text-[14px] text-white'>On Sale</span>
+                        </div>
+                    )
+                }
+
+            }
+            if (event.event_status === "SoldOut") {
+                return (
+                    <div className='w-[80px] h-[30px] mt-[-16px] ml-[-2px] mb-[8px] bg-red-500 rounded-[10px] flex justify-center items-center'>
+                        <span className='text-[14px] text-white'>Sold Out</span>
+                    </div>
+                )
+            }
+            if (event.total_tickets_remaining === -1) {
+                return (
+                    <div className='w-[80px] h-[30px] mt-[-16px] ml-[-2px] mb-[8px] bg-red-500 rounded-[10px] flex justify-center items-center'>
+                        <span className='text-[14px] text-white'>Sold Out</span>
+                    </div>
+                )
+            }
+
+        }
+
     }
 
     const goToDetails = (event: any) => {
@@ -71,21 +128,24 @@ export default function EventCard({ label, events }: any) {
                                 className="flex flex-wrap gap-6"
                             >
                                 {events.map((event: any, index: any) => (
-                                    <div key={index} onClick={() => goToDetails(event)} className="w-[280px] pb-4 cursor-pointer bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                                    <div key={index} onClick={() => goToDetails(event)} className="w-[280px] pb-0 cursor-pointer bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
 
                                         <img
                                             className="rounded-t-lg w-[312px] h-[150px]"
                                             src={event.banner ? `${Urls.BASE_URL}${event.banner}` : '/images/event_banner.jpeg'} alt="" />
 
                                         <div className="p-5 h-[40%]">
+                                            {
+                                                renderStatus(event)
+                                            }
 
                                             <h5 className="mb-2 text-[16px] font-bold tracking-tight text-gray-900 dark:text-white">{event.title}</h5>
 
-                                            <p className="mb-[6px] text-[12px] font-normal text-gray-700 dark:text-gray-400">{event?.date}, {event?.start_time}</p>
+                                            <p className="mb-[6px] text-[12px] font-normal text-gray-700 dark:text-gray-400">{dayjs(event?.date, 'YYYY-MM-DD').format("MMM D, YYYY")}, {formattedAMPMTime(event?.start_time)}</p>
                                             <p className="mb-3 text-[12px] font-normal text-gray-700 dark:text-gray-400">{event?.address}</p>
 
                                         </div>
-                                        <div className='h-[20%] flex flex-row justify-between items-center mx-4 pb-4'>
+                                        <div className='h-[20%] flex flex-row justify-between items-center mx-5 pb-4'>
                                             {
                                                 event?.ticket_type === "Free" ?
                                                     event?.ticket_type === "Donation" ?
@@ -93,29 +153,9 @@ export default function EventCard({ label, events }: any) {
                                                         <p className="font-bold text-gray-700 dark:text-gray-400">Free</p> :
                                                     <p className="font-bold text-gray-700 dark:text-gray-400">CAD${event?.ticket_price}</p>
                                             }
-
-
                                             {
-                                                getFavEvents(event.id) ?
-                                                    <div className={`h-[40px] w-[40px] rounded-full hover:bg-blue cursor-pointer flex items-center justify-center  border border-gray-300`}>
-
-                                                        <img
-                                                            src="/images/favourite_icon.svg"
-                                                            alt="Description of your image"
-                                                            className="w-[20px] h-[20px] object-cover" />
-                                                        {/* <span className="text-[12px]">Save</span> */}
-                                                    </div>
-                                                    :
-                                                    <div className={`h-[40px] w-[40px] rounded-full hover:bg-blue cursor-pointer flex items-center justify-center  border border-gray-300`}>
-
-                                                        <img
-                                                            src="/images/unfavourite_icon.svg"
-                                                            alt="Description of your image"
-                                                            className="w-[20px] h-[20px] object-cover" />
-                                                        {/* <span className="text-[12px]">Save</span> */}
-                                                    </div>
+                                                renderSavedIcon(event)
                                             }
-
                                         </div>
 
                                     </div>

@@ -12,7 +12,7 @@ import { AppDispatch } from "@/app/redux/store";
 import { useDispatch } from "react-redux";
 import { setToken } from "@/app/redux/features/app-slice";
 import UserInterest from "../Auth/UserInterest";
-import { doSignUp } from '@/app/services/Auth/auth-service';
+import { doSignUp, checkUserExistOrNot, doLogin } from '@/app/services/Auth/auth-service';
 import { TokenConstants } from '../utils/constants';
 import { jwtDecode } from "jwt-decode";
 
@@ -36,6 +36,8 @@ export default function Signup(props: any) {
         password: "",
         confirmPassword: ""
     });
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
@@ -66,6 +68,14 @@ export default function Signup(props: any) {
             ...prev,
             [event.target.name]: event.target.value,
         }));
+    };
+
+    const handleTogglePassword = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const handleToggleConfirmPassword = () => {
+        setShowConfirmPassword(!showConfirmPassword);
     };
 
     const isFormValid = (form: FormType): any | null => {
@@ -147,49 +157,137 @@ export default function Signup(props: any) {
                 last_name: object?.lastName
             };
 
-            doSignUp(
-                params,
-                (success: any) => {
-                    console.log('doSignUp success', success);
-
-                    if (success) {
-
-                        const access_token = success?.data?.access;
-                        const refresh_token = success?.data?.refresh;
-
-                        if (access_token) {
-                            const decoded = jwtDecode(access_token);
-                            console.log(decoded);
-                            if (decoded) {
-                                const user_id = decoded?.user_id;
-                                localStorage.setItem(TokenConstants.USER_INFO, user_id)
-                                if (access_token && user_id) {
-                                    setIsSignupCompleted(true)
-                                    localStorage.setItem(TokenConstants.ACCESS_TOKEN, access_token)
-                                }
-                            }
-                            console.log(TokenConstants.ACCESS_TOKEN, access_token);
-                            // dispatch(setToken(access_token));
-
-                        } else {
-
-                        }
-                    }
-                },
-                (error: any) => {
-                    console.log('login error', error);
-                    if (error && error.data) {
-                        let errmsg = Object.values(error.data)[0] as any;
-                        console.log(errmsg)
-                        if (errmsg && errmsg.length > 0) {
-                            alert(errmsg[0])
-                        }
-                    }
-                },
-            );
+            doCallSignup(params)
 
 
         }
+    }
+
+    const doCallSignup = (params: any) => {
+        doSignUp(
+            params,
+            (success: any) => {
+                console.log('doSignUp success', success);
+
+                if (success) {
+
+                    const access_token = success?.data?.access;
+                    const refresh_token = success?.data?.refresh;
+
+                    if (access_token) {
+                        const decoded = jwtDecode(access_token) as any;
+                        console.log(decoded);
+                        if (decoded) {
+                            const user_id = decoded?.user_id;
+                            localStorage.setItem(TokenConstants.USER_INFO, user_id)
+                            if (access_token && user_id) {
+                                setIsSignupCompleted(true)
+                                localStorage.setItem(TokenConstants.ACCESS_TOKEN, access_token)
+                            }
+                        }
+                        console.log(TokenConstants.ACCESS_TOKEN, access_token);
+                        // dispatch(setToken(access_token));
+
+                    } else {
+
+                    }
+                }
+            },
+            (error: any) => {
+                console.log('login error', error);
+                if (error && error.data) {
+                    let errmsg = Object.values(error.data)[0] as any;
+                    console.log(errmsg)
+                    if (errmsg && errmsg.length > 0) {
+                        alert(errmsg[0])
+                    }
+                }
+            },
+        );
+    }
+
+    const doCallLogin = (params: any) => {
+        doLogin(
+            params,
+            (success: any) => {
+                console.log('login success', success);
+
+                if (success) {
+                    const access_token = success?.data?.access;
+                    const refresh_token = success?.data?.refresh;
+
+                    if (access_token) {
+                        const decoded = jwtDecode(access_token) as any;
+                        console.log(decoded);
+                        if (decoded) {
+                            const user_id = decoded?.user_id;
+                            localStorage.setItem(TokenConstants.USER_INFO, user_id)
+                        }
+                        console.log(TokenConstants.ACCESS_TOKEN, access_token);
+                        dispatch(setToken(access_token));
+                        localStorage.setItem(TokenConstants.ACCESS_TOKEN, access_token)
+                    } else {
+
+                    }
+                }
+            },
+            (error: any) => {
+                console.log('login error', error);
+                if (error && error.data) {
+                    alert(error?.data?.detail)
+                    // let errmsg = Object.values(error.data)[0] as any;
+                    // console.log(errmsg)
+                    // if (errmsg && errmsg.length > 0) {
+                    //     alert(errmsg[0])
+                    // }
+                }
+            },
+        );
+    }
+
+    const checkUserExist = (user: any) => {
+        console.log('user_email', user?.email)
+        // let params = {
+        //     username: user_email,
+        //     password: 'abcd1234',
+        // };
+        // doCallLogin(params)
+
+        const fullName = user?.displayName;
+        const nameParts = fullName.split(" ");
+
+        const firstName = nameParts.slice(0, -1).join(" ");
+        const lastName = nameParts[nameParts.length - 1];
+
+        let params = {
+            username: user?.email,
+            password: 'abcd1234',
+            email: user?.email,
+            first_name: firstName,
+            last_name: lastName
+        };
+
+        doCallSignup(params)
+        checkUserExistOrNot(
+            user?.email,
+            (success: any) => {
+                console.log('checkUserExistOrNot success', success);
+
+                if (success) {
+                }
+            },
+            (error: any) => {
+                console.log('checkUserExistOrNot error', error);
+                if (error && error.data) {
+                    alert(error?.data?.detail)
+                    // let errmsg = Object.values(error.data)[0] as any;
+                    // console.log(errmsg)
+                    // if (errmsg && errmsg.length > 0) {
+                    //     alert(errmsg[0])
+                    // }
+                }
+            },
+        );
     }
 
     const handleLogInWithGoogle = async () => {
@@ -198,8 +296,9 @@ export default function Signup(props: any) {
             if (success) {
                 console.log('success', success)
                 if (success.user && success.user?.uid) {
-                    dispatch(setToken(success.user?.uid));
-                    localStorage.setItem("accessToken", success.user?.uid)
+                    checkUserExist(success.user)
+                    // dispatch(setToken(success.user?.uid));
+                    // localStorage.setItem("accessToken", success.user?.uid)
 
                 }
             }
@@ -280,38 +379,84 @@ export default function Signup(props: any) {
 
                                         <div>
                                             <label htmlFor="password" className="block mb-2 text-md text-gray-600 dark:text-gray-900">Password</label>
-                                            <input
-                                                type="password"
-                                                name="password"
-                                                id="password"
-                                                placeholder="password"
-                                                required
-                                                value={formData.password}
-                                                onChange={handleFormChange}
-                                                className="block w-full px-4 py-2 mt-2 mb-4 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-200 dark:text-gray-900 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
-                                            {
-                                                errorObj && errorObj?.inputLabel === "password" ?
-                                                    <p className="mt-2 text-sm text-red-600 dark:text-red-500">{errorObj?.errorMsg}</p> : null
+                                            <div className="relative">
+                                                <input
+                                                    type={showPassword ? "text" : "password"}
+                                                    name="password"
+                                                    id="password"
+                                                    placeholder="password"
+                                                    required
+                                                    value={formData.password}
+                                                    onChange={handleFormChange}
+                                                    className="block w-full px-4 py-2 mt-2 mb-4 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-200 dark:text-gray-900 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
+                                                {
+                                                    errorObj && errorObj?.inputLabel === "password" ?
+                                                        <p className="mt-2 text-sm text-red-600 dark:text-red-500">{errorObj?.errorMsg}</p> : null
 
-                                            }
+                                                }
+
+                                                <button type="button" onClick={handleTogglePassword} className="absolute top-0 end-0 p-3.5 rounded-e-md">
+                                                    {
+                                                        showPassword ?
+                                                            <svg className="flex-shrink-0 size-3.5 text-gray-400 dark:text-neutral-600" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path className="hs-password-active:hidden" d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+                                                                <path className="hs-password-active:hidden" d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
+                                                                <path className="hs-password-active:hidden" d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+                                                                <path className="hidden hs-password-active:block" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                                                                <circle className="hidden hs-password-active:block" cx="12" cy="12" r="3"></circle>
+                                                            </svg> :
+                                                            <svg className="flex-shrink-0 size-3.5 text-gray-400 dark:text-neutral-600" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path className="hs-password-active:hidden" d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+                                                                <path className="hs-password-active:hidden" d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
+                                                                <path className="hs-password-active:hidden" d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+                                                                <line className="hs-password-active:hidden" x1="2" x2="22" y1="2" y2="22"></line>
+                                                                <path className="hidden hs-password-active:block" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                                                                <circle className="hidden hs-password-active:block" cx="12" cy="12" r="3"></circle>
+                                                            </svg>
+                                                    }
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <div>
                                             <label htmlFor="confirm password" className="block mb-2 text-md text-gray-600 dark:text-gray-900">Confirm Password</label>
-                                            <input
-                                                type="password"
-                                                name="confirmPassword"
-                                                id="confirmPassword"
-                                                value={formData.confirmPassword}
-                                                required
-                                                onChange={handleFormChange}
-                                                placeholder="confirm password"
-                                                className="block w-full px-4 py-2 mt-2 mb-4 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-200 dark:text-gray-900 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
-                                            {
-                                                errorObj && errorObj?.inputLabel === "confirmPassword" ?
-                                                    <p className="mt-2 text-sm text-red-600 dark:text-red-500">{errorObj?.errorMsg}</p> : null
+                                            <div className="relative">
+                                                <input
+                                                    type={showConfirmPassword ? "text" : "password"}
+                                                    name="confirmPassword"
+                                                    id="confirmPassword"
+                                                    value={formData.confirmPassword}
+                                                    required
+                                                    onChange={handleFormChange}
+                                                    placeholder="confirm password"
+                                                    className="block w-full px-4 py-2 mt-2 mb-4 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-200 dark:text-gray-900 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
+                                                {
+                                                    errorObj && errorObj?.inputLabel === "confirmPassword" ?
+                                                        <p className="mt-2 text-sm text-red-600 dark:text-red-500">{errorObj?.errorMsg}</p> : null
 
-                                            }
+                                                }
+
+                                                <button type="button" onClick={handleToggleConfirmPassword} className="absolute top-0 end-0 p-3.5 rounded-e-md">
+                                                    {
+                                                        showConfirmPassword ?
+                                                            <svg className="flex-shrink-0 size-3.5 text-gray-400 dark:text-neutral-600" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path className="hs-password-active:hidden" d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+                                                                <path className="hs-password-active:hidden" d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
+                                                                <path className="hs-password-active:hidden" d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+                                                                <path className="hidden hs-password-active:block" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                                                                <circle className="hidden hs-password-active:block" cx="12" cy="12" r="3"></circle>
+                                                            </svg> :
+                                                            <svg className="flex-shrink-0 size-3.5 text-gray-400 dark:text-neutral-600" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path className="hs-password-active:hidden" d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+                                                                <path className="hs-password-active:hidden" d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
+                                                                <path className="hs-password-active:hidden" d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+                                                                <line className="hs-password-active:hidden" x1="2" x2="22" y1="2" y2="22"></line>
+                                                                <path className="hidden hs-password-active:block" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                                                                <circle className="hidden hs-password-active:block" cx="12" cy="12" r="3"></circle>
+                                                            </svg>
+                                                    }
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <div className="mt-6">

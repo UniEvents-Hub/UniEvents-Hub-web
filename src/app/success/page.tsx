@@ -1,17 +1,140 @@
+"use client";
 import Head from "next/head";
 
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useAppSelector } from "@/app/redux/store";
+import { getUserOrderDetails } from "../services/User/user-service";
+import { doBuyTicket, getEventDetails } from '@/app/services/Event/event-service';
+import { TokenConstants } from '@/app/utils/constants';
+import Loader from '@/app/components/Loader';
+
 const Success = () => {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const userData = useAppSelector((store) => store.appReducer.userData);
+    const [invoiceId, setInvoiceId] = useState('');
+    const [orderId, setOrderId] = useState('');
+    const [loading, setLoading] = useState<boolean>(true);
+    const [eventDetails, setEventDetails] = useState<any>(null);
+
+    useEffect(() => {
+        const evet_id = searchParams?.get("eventId");
+        getEventInfo(evet_id)
+    }, []);
+
+    const getEventInfo = (id: any) => {
+        setLoading(true)
+        getEventDetails(
+            id,
+            (success: any) => {
+                console.log('getEventDetails success', success);
+
+                if (success && success.data.length > 0) {
+                    setEventDetails(success.data[0]);
+                    buyTicket(success.data[0])
+                }
+            },
+            (error: any) => {
+                console.log('login error', error);
+                alert('Something went wrong!')
+                setTimeout(() => {
+                    setLoading(false);
+                }, 1000)
+            },
+        );
+    }
+
+    const buyTicket = (eventInfo: any) => {
+        let quantity = 1
+        quantity = Number(searchParams?.get("q_Id"));
+        let user_id = localStorage.getItem(TokenConstants.USER_INFO);
+        let subTotal = eventInfo?.ticket_price * quantity
+        let tax = eventInfo?.ticket_price * quantity * 0.05
+        let totalAmount = subTotal + tax
+        const params = {
+            ticket_number: quantity ? quantity : 1,
+            total_cost: totalAmount ? totalAmount : 0.00,
+            user: user_id,
+            event: eventInfo?.id
+        };
+
+        doBuyTicket(
+            params,
+            (success: any) => {
+                console.log('doBuyTicket success', success);
+
+                if (success && success.data.ticket?.id) {
+                    if (success.data.ticket?.id) {
+                        getOrderDetails(success.data.ticket?.id)
+                        setOrderId(success.data.ticket?.id)
+                    }
+                }
+                setTimeout(() => {
+                    setLoading(false);
+                }, 1000)
+            },
+            (error: any) => {
+                console.log('doUpdateEvent error', error);
+                setLoading(false);
+                if (error && error.data) {
+                    let errmsg = Object.values(error.data)[0] as any;
+                    console.log(errmsg)
+                    if (errmsg && errmsg.length > 0) {
+                        alert(errmsg[0])
+                    }
+                }
+            },
+        );
+
+    }
+
+    const getOrderDetails = (order_id: any) => {
+
+        getUserOrderDetails(
+            order_id,
+            (success: any) => {
+                console.log('getUserOrderDetails success', success);
+                if (success && success.data) {
+                    setInvoiceId(success.data.invoice_id)
+                }
+            },
+            (error: any) => {
+                console.log('getUserOrderDetails error', error);
+            },
+        );
+
+    }
+
+    const goOrderDetails = () => {
+        const evet_id = searchParams?.get("eventId");
+        setTimeout(() => {
+            router.push(`/tickets/orderDetails?orderId=${orderId}&eventId=${evet_id}`)
+        }, 1000)
+    }
+
+    if (loading)
+        return (
+            <>
+                <Loader message={'Payment Processing.......'} />
+            </>
+        );
+
     return (
         <>
             <div className="flex flex-col pl-[300px] pr-[100px] mt-20 w-full overflow-hidden no-scrollbar justify-center items-center">
-                <h1 className="text-black text-[20px] font-bold text-center">Thank you, Mahmud hasan. Your order is complete!</h1>
-                <h3 className="text-gray-500 text-[18px] text-center">Your confirmation number is #LqC7y</h3>
+                <h1 className=" text-[20px] text-green-500 font-bold text-center">Thank you, {userData?.user?.first_name} {userData?.user?.last_name}. Your order is complete!</h1>
+                <h3 className="text-gray-500 text-[18px] text-center">Your confirmation number is {invoiceId}</h3>
 
-                <div className='w-[210px] mt-4 mr-4 bg-green-600 h-[50px] rounded-lg p-4 flex justify-center items-center cursor-pointer  hover:bg-green-800'>
-                    <span className="mb-0 text-[18px] font-medium text-white dark:text-gray-400">Download Ticket</span>
+                <div onClick={() => {
+                    goOrderDetails()
+
+                }}
+                    className='w-[210px] mt-4 mr-4 bg-green-600 h-[50px] rounded-lg p-4 flex justify-center items-center cursor-pointer  hover:bg-green-800'>
+                    <span className="mb-0 text-[18px] font-medium text-white dark:text-gray-400">Go To Order Details</span>
 
                 </div>
-
+                {/* 
                 <div className="h-[240px] mt-20 flex flex-col justify-between bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
 
                     <div className="w-[100%] h-[60%] flex">
@@ -44,7 +167,7 @@ const Success = () => {
                                     src="/images/favourite_icon.svg"
                                     alt="Description of your image"
                                     className="w-[20px] h-[20px] object-cover" />
-                                {/* <span className="text-[12px]">Save</span> */}
+                                 
 
                             </div>
                             <div className='flex flex-col items-start ml-[14px]'>
@@ -59,7 +182,7 @@ const Success = () => {
                                     src="/images/favourite_icon.svg"
                                     alt="Description of your image"
                                     className="w-[20px] h-[20px] object-cover" />
-                                {/* <span className="text-[12px]">Save</span> */}
+                                 
 
                             </div>
                             <div className='flex flex-col items-start ml-[14px]'>
@@ -74,7 +197,7 @@ const Success = () => {
                                     src="/images/favourite_icon.svg"
                                     alt="Description of your image"
                                     className="w-[20px] h-[20px] object-cover" />
-                                {/* <span className="text-[12px]">Save</span> */}
+                                
 
                             </div>
                             <div className='flex flex-col items-start ml-[14px]'>
@@ -86,7 +209,9 @@ const Success = () => {
 
 
                     </div>
-                </div>
+
+
+                </div> */}
             </div>
         </>
     );

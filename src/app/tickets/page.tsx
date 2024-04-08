@@ -18,7 +18,6 @@ function TicketsPage() {
     useEffect(() => {
         // console.log('accessToken', accessToken)
         let token = localStorage.getItem(TokenConstants.ACCESS_TOKEN);
-        console.log('layout token', token);
         getorders()
     }, []);
 
@@ -28,10 +27,10 @@ function TicketsPage() {
         getUserOrders(
             user_id,
             (success: any) => {
-                console.log('getFavouritesEvents success', success);
+                console.log('getUserOrders success', success);
                 setTimeout(() => {
                     setLoading(false)
-                }, 2000)
+                }, 1000)
                 if (success) {
                     setAllOrders(success.data)
                 }
@@ -40,7 +39,7 @@ function TicketsPage() {
                 console.log('login error', error);
                 setTimeout(() => {
                     setLoading(false)
-                }, 2000)
+                }, 1000)
             },
         );
 

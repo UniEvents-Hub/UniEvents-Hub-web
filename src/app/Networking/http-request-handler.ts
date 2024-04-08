@@ -7,6 +7,7 @@ const httpHelper = new HttpHelper();
 export const GET_WITHOUT_TOKEN = async (url: any, success: any, error: any) => {
   try {
     const response = await axios.get(url);
+    console.log('GET_WITHOUT_TOKEN response', response)
     if (success) {
       success(await response);
     }
@@ -20,10 +21,29 @@ export const GET_WITHOUT_TOKEN = async (url: any, success: any, error: any) => {
 export const GET = async (url: any, success: any, error: any) => {
   try {
     let token = localStorage.getItem(TokenConstants.ACCESS_TOKEN);
-    console.log('get token', token)
+    // console.log('get token', token)
     if(token) {
     const response = await axios.get(url,  httpHelper.getHeader(token));
-    console.log('inspection response...', response);
+    console.log('response', response)
+    if (success) {
+      success(await response);
+    }
+  }
+  } catch (err: any) {
+    console.log('user get response...error', err);
+    if (error) {
+      error(await err.response);
+    }
+  }
+};
+
+export const GET_FIXED_TOKEN = async (url: any, success: any, error: any) => {
+  try {
+    let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3NzEyNjU0LCJpYXQiOjE3MTI1Mjg2NTQsImp0aSI6ImVkZjUxNjdiOTcxYTQ4YTJiOWUwYzJjZGZlZTI0ZTNlIiwidXNlcl9pZCI6Mn0.liMH4qsgWl83ViEaAwLh2nYQOOkg9PYLUrufKHiUWPc';
+    // console.log('get token', token)
+    if(token) {
+    const response = await axios.get(url,  httpHelper.getHeader(token));
+    console.log('response', response)
     if (success) {
       success(await response);
     }
@@ -38,10 +58,8 @@ export const GET = async (url: any, success: any, error: any) => {
 
 export const POST_WITHOUT_TOKEN = async (url:any, params: any, success: any, error: any) => {
  
-  try {
-    console.log('url params', url, params)
-    const response = await axios.post(url, params);
-    console.log('response', response)
+  try { 
+    const response = await axios.post(url, params); 
     if (success) {
       success(await response);
     }
@@ -58,8 +76,7 @@ export const POST = async (url: any, params: any, success: any, error: any) => {
   try {
     let token = localStorage.getItem(TokenConstants.ACCESS_TOKEN);
     if(token) {
-    const response = await axios.post(url, params, httpHelper.getHeader(token));
-    console.log('response', response)
+    const response = await axios.post(url, params, httpHelper.getHeader(token)); 
     if (success) {
       success(await response);
     }
@@ -75,8 +92,7 @@ export const POST_EVENT = async (url: any, params: any, success: any, error: any
     try {
       let token = localStorage.getItem(TokenConstants.ACCESS_TOKEN);
       if(token) {
-      const response = await axios.post(url, params, httpHelper.getEventHeader(token));
-      console.log('response', response)
+      const response = await axios.post(url, params, httpHelper.getEventHeader(token)); 
       if (success) {
         success(await response);
       }
@@ -92,8 +108,7 @@ export const POST_EVENT = async (url: any, params: any, success: any, error: any
     try {
       let token = localStorage.getItem(TokenConstants.ACCESS_TOKEN);
       if(token) {
-      const response = await axios.patch(url, params, httpHelper.getEventHeader(token));
-      console.log('response', response)
+      const response = await axios.patch(url, params, httpHelper.getEventHeader(token)); 
       if (success) {
         success(await response);
       }
@@ -110,7 +125,7 @@ export const PATCH = async (url: any, params: any, success: any, error: any) => 
     let token = localStorage.getItem(TokenConstants.ACCESS_TOKEN);
     if(token) {
     const response = await axios.patch(url, params, httpHelper.getMultiPartHeader(token));
-    console.log('response', response)
+    // console.log('response', response)
     if (success) {
       success(await response);
     }
@@ -128,8 +143,7 @@ export const GETFILE = async (url: any, success: any, error: any) => {
     let token = localStorage.getItem(TokenConstants.ACCESS_TOKEN);
    if(token)  {
       console.log(httpHelper.getMultiPartHeader(token))
-    const response = await axios.get(url,  httpHelper.getMultiPartHeader(token));
-    console.log('GETFILE response...', response);
+    const response = await axios.get(url,  httpHelper.getMultiPartHeader(token)); 
     if (success) {
       success(await response);
     }

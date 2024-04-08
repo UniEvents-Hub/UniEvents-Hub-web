@@ -7,6 +7,7 @@ const Urls = {
     LOG_IN: 'login',
     SIGN_UP: 'signup/',
     GET_USER: 'api/userprofile',
+    USER_EXIST_NOT: 'api/userexists',
     UPDATE_USER: 'api/updateuserprofile',
     GET_ALL_EVENTS: 'event/eventslist/',
     GET_EVENT_DETAILS: 'event/specificevent/',
@@ -16,8 +17,10 @@ const Urls = {
     UN_SAVED_EVENT: 'event/eventunsave/',
     GET_ORG_EVENTS: 'event/userspecificevent/',
     GET_FAVS_EVENTS: 'event/getsaved/',
+    CHECK_SAVED_EVENT: 'event/checksaved/',
     BUY_TICKET: 'event/buyticket/',
     GET_USER_ORDERS: 'event/getticket/',
+    GET_ORDER_DETAILS: 'event/ticketdetail/',
     REFRESH_TOKEN: 'refreshToken', 
   };
   

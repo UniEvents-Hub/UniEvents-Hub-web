@@ -4,7 +4,7 @@ import React from "react";
 
 export default function MessageModal({ closeModal, message }: any) {
     return (
-        <div id="successModal" aria-hidden="true" className="fixed top-0 left-0 bg-[#007a33] bg-opacity-80 h-full w-full flex flex-col items-center justify-center" style={{ zIndex: 100 }}>
+        <div id="successModal" aria-hidden="true" className="fixed top-0 left-0 bg-[#007a33] bg-opacity-80 h-full w-full flex flex-col items-center justify-center" style={{ zIndex: 1000 }}>
             <div className="relative p-4 w-full max-w-md h-full md:h-auto">
 
                 <div className="relative p-4 text-center bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">

@@ -14,6 +14,7 @@ import {
     userDetails,
 } from "@/app/redux/features/app-slice";
 import { useDispatch } from "react-redux";
+import { setToken } from "@/app/redux/features/app-slice";
 
 
 export default function AuthLayout({
@@ -41,15 +42,18 @@ export default function AuthLayout({
         console.log('layout token', token);
         setAccessToken(token);
         if (token) {
+            dispatch(setToken(token));
             getUserData()
         }
         setTimeout(() => {
             setLoading(false)
-        }, 2000)
+        }, 1000)
 
         if (userData) {
             setIsProfileCompleted(checkIfProfileCompleted(userData));
         }
+
+        console.log('storeToken', storeToken)
     }, [storeToken]);
 
     const getUserData = () => {
@@ -77,27 +81,6 @@ export default function AuthLayout({
         );
     };
 
-    const createUserIfNotExists = async (authUser: any) => {
-        console.log("trying to create user");
-        // if (authUser.uid) {
-
-        //   const user = await getUserInfoById(authUser.uid);
-        //   if (!user) {
-        //     // console.log("creating user", authUser.uid);
-        //     const userPayload: User = {
-        //       email: authUser.email ?? "",
-        //       authProvider: authUser.providerId,
-        //       uid: authUser.uid,
-        //       phoneNumber: authUser.phoneNumber ?? "",
-        //     };
-        //     await createUser(userPayload, authUser.uid);
-        //   }
-        // }
-
-        return null;
-
-    };
-
     const handleSignup = (enableSignup: boolean) => {
         setIsSignup(enableSignup)
 
@@ -110,7 +93,7 @@ export default function AuthLayout({
             </>
         );
 
-    else if ((accessToken)) return <>{children}</>;
+    else if ((storeToken)) return <>{children}</>;
     else
         return (
             <div className="flex flex-col">

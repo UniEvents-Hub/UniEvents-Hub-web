@@ -28,6 +28,11 @@ export const getFilteredEvents = async (event_type: any, success: any, error: an
  return GET(url, success, error);
 };
 
+export const checkEventIsSaved = async (event_id: any, success: any, error: any) => {
+  let url = `${Urls.BASE_URL}${Urls.CHECK_SAVED_EVENT}${event_id}/`; 
+ return GET(url, success, error);
+};
+
 export const doCreateEvent = async (params: any, success: any, error: any) => {
     let url = `${Urls.BASE_URL}${Urls.CREATE_EVENT}`; 
    return POST_EVENT(url, params, success, error);

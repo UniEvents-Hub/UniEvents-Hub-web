@@ -13,6 +13,7 @@ import * as _ from "lodash";
 import { doUpdateUser } from '@/app/services/User/user-service';
 import { TokenConstants } from '../utils/constants';
 import MessageModal from '@/app/components/common/messageModal';
+import Urls from "@/app/Networking/urls";
 
 function ProfilePage() {
     const router = useRouter();
@@ -116,11 +117,11 @@ function ProfilePage() {
                         <div className={`flex items-center justify-center`}>
                             <div className={`md:h-[120px] h-[75px] md:w-[120px] w-[75px] md:rounded-full rounded-full ${image ? 'bg-gray-200' : 'bg-black'} flex justify-center items-center`}>
                                 {
-                                    image ?
+                                    image || userInfo && userInfo.profile?.profile_photo ?
                                         <img
-                                            src={image}
+                                            src={image ? image : `${Urls.BASE_URL}${userData?.profile?.profile_photo}`}
                                             alt="Selected"
-                                            className="md:h-[120px] h-[75px] md:w-[120px] w-[75px] md:rounded-full rounded-full object-fit" /> :
+                                            className="md:h-[120px] h-[75px] md:w-[120px] w-[75px] md:rounded-full rounded-full object-cover" /> :
                                         <h1 className="navbar-profile-gradient-background text-center md:text-[50px] text-[27px] font-bold text-white">
                                             {getIntialials(userInfo && userInfo.user && userInfo.user?.first_name, userInfo && userInfo.user && userInfo.user?.last_name)}
                                         </h1>

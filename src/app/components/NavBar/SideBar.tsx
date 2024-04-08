@@ -14,6 +14,7 @@ import { setToken, logOut } from "@/app/redux/features/app-slice";
 import { TokenConstants } from "@/app/utils/constants";
 
 import * as _ from 'lodash';
+import Urls from "@/app/Networking/urls";
 
 type MenuItem = {
     name: string;
@@ -22,7 +23,6 @@ type MenuItem = {
     isSubMenuOpen?: boolean;
     href?: string;
     submenu?: MenuItem[];
-    fn?: () => Promise<void>;
 };
 
 const initialMenu: MenuItem[] = [
@@ -74,7 +74,6 @@ export default function NewNavbar({ show, setter }: any) {
         let token = localStorage.getItem("accessToken");
         if (token) {
             setAccessToken(token);
-
         }
 
     }, [storeToken]);
@@ -109,8 +108,6 @@ export default function NewNavbar({ show, setter }: any) {
                 router.push(selectedMenuItem.href);
             }
 
-        } else if (selectedMenuItem.fn) {
-            selectedMenuItem.fn();
         }
         setter((oldVal: any) => !oldVal);
     };
@@ -128,47 +125,36 @@ export default function NewNavbar({ show, setter }: any) {
         <>
             {Loading.isLoading && <Loader message={Loading.message} />}
 
-            {!accessToken && (
-                <div
-                    id="default-sidebar"
-                    className={`${containerClassName}${appendClass} bg-[#275d38] default-sideBar fixed`}
-                    aria-label="Sidebar"
-                >
-                    <div className="h-screen ">
+            <div
+                id="default-sidebar"
+                className={`${containerClassName}${appendClass} bg-[#275d38] default-sideBar fixed`}
+                aria-label="Sidebar"
+            >
+                <div className="h-screen ">
 
-                        <div className={`h-full pt-[0px] pl-[0px] flex-col flex`}>
+                    <div className={`h-full pt-[0px] pl-[0px] flex-col flex`}>
 
-                            <div className="flex justify-between items-center">
-                                <Image
-                                    height={10}
-                                    width={200}
-                                    className="mt-2"
-                                    src="/images/ue-hub-logo-2.png"
-                                    alt="c-tribe"
-                                />
-                            </div>
+                        <div className="flex justify-between items-center">
+                            <Image
+                                height={10}
+                                width={200}
+                                className="mt-2"
+                                src="/images/ue-hub-logo-2.png"
+                                alt="c-tribe"
+                            />
+                        </div>
 
-                            <div className="pl-[20px] pt-4 ">
-                                {initialMenu.map((item, index) => (
-                                    <div
-                                        key={index}
-                                        className={`cursor-pointer flex justify-start items-center pt-2`}
-                                        onClick={() => handleInitialMenuItemClick(index)}
-                                    >
-                                        <div className="flex items-center justify-start mt-6">
-                                            {
-                                                selectedPathName === item.href ?
-                                                    <div className="w-[28px] h-[28px] rounded-[4px] flex justify-center items-center bg-[#f2cd00]">
-                                                        <Image
-                                                            src={selectedPathName === item.href ? item.selectedIcon : item.icon}
-                                                            width={20}
-                                                            height={20}
-                                                            alt="sideBar"
-                                                            style={{ objectFit: "contain" }}
-                                                            quality={75}
-                                                        />
-                                                    </div>
-                                                    :
+                        <div className="pl-[20px] pt-4 ">
+                            {initialMenu.map((item, index) => (
+                                <div
+                                    key={index}
+                                    className={`cursor-pointer flex justify-start items-center pt-2`}
+                                    onClick={() => handleInitialMenuItemClick(index)}
+                                >
+                                    <div className="flex items-center justify-start mt-6">
+                                        {
+                                            selectedPathName === item.href ?
+                                                <div className="w-[28px] h-[28px] rounded-[4px] flex justify-center items-center bg-[#f2cd00]">
                                                     <Image
                                                         src={selectedPathName === item.href ? item.selectedIcon : item.icon}
                                                         width={20}
@@ -177,51 +163,63 @@ export default function NewNavbar({ show, setter }: any) {
                                                         style={{ objectFit: "contain" }}
                                                         quality={75}
                                                     />
-                                            }
+                                                </div>
+                                                :
+                                                <Image
+                                                    src={selectedPathName === item.href ? item.selectedIcon : item.icon}
+                                                    width={20}
+                                                    height={20}
+                                                    alt="sideBar"
+                                                    style={{ objectFit: "contain" }}
+                                                    quality={75}
+                                                />
+                                        }
 
-                                            <span className={`ml-[12px] text-[14px] ${selectedPathName === item.href ? 'font-bold text-[#f2cd00]' : 'font-normal text-white'}`}>{item.name}</span>
+                                        <span className={`ml-[12px] text-[14px] ${selectedPathName === item.href ? 'font-bold text-[#f2cd00]' : 'font-normal text-white'}`}>{item.name}</span>
 
 
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <hr className="mr-4 mt-8 h-5.5 border-t-0 bg-[#C4C4C4]" />
-
-
-
-
-                            <div className="flex flex-col cursor-pointer md:pb-10 md:mt-auto mt-[60px] pl-[20px]"
-                                onClick={() => {
-                                    setter((oldVal: any) => !oldVal);
-                                    router.push(profileItem.href)
-                                }}>
-                                <div
-                                    className={`flex items-center justify-start`}>
-
-                                    <div className="h-[45px] w-[45px] rounded-[10px] ml-[-6px] bg-[#f2cd00] flex justify-center items-center">
-
-                                        {/* <img
-                  className="w-[45px] h-[45px] rounded-[10px]"
-                  src={item.icon}
-                  alt="Profile picture" /> */}
-                                        <h1 className=" text-[#007a33] text-center text-[16px] font-bold">{getIntialials('Mahmud', 'Hasan')}</h1>
-                                    </div>
-
-                                    <div className="mt-1 ml-2 flex flex-col justify-center">
-                                        <span className="text-[#f2cd00] font-medium text-[13px]">{`${_.capitalize('Mahmud')} ${_.capitalize('Hasan')}`}</span>
-                                        {/* <span className="text-[#00000080] font-normal text-[12px] mt-0">View Account</span> */}
                                     </div>
                                 </div>
-                            </div>
+                            ))}
+                        </div>
 
-                        </div >
-                    </div>
-                </div >
-            )
-            }
-            {accessToken && show ? <ModalOverlay /> : <></>}
+                        <hr className="mr-4 mt-8 h-5.5 border-t-0 bg-[#C4C4C4]" />
+
+                        <div className="flex flex-col cursor-pointer md:pb-10 md:mt-auto mt-[60px] pl-[20px]"
+                            onClick={() => {
+                                setter((oldVal: any) => !oldVal);
+                                router.push(profileItem.href)
+                            }}>
+                            <div
+                                className={`flex items-center justify-start`}>
+
+                                {
+                                    userData?.profile?.profile_photo ?
+                                        <img
+                                            src={`${Urls.BASE_URL}${userData?.profile?.profile_photo}`}
+                                            alt="Selected"
+                                            className="w-[45px] h-[45px] rounded-full mr-[1px]" /> :
+                                        <div className="h-[45px] w-[45px] rounded-[10px] ml-[-6px] bg-[#f2cd00] flex justify-center items-center">
+                                            <h1 className="navbar-profile-gradient-background text-center md:text-[22px] text-[22px] font-bold text-white">
+                                                {getIntialials(userData && userData.user && userData.user?.first_name, userData && userData.user && userData.user?.last_name)}
+                                            </h1>
+                                        </div>
+
+                                }
+
+
+                                <div className="mt-1 ml-2 flex flex-col justify-center">
+                                    <span className="text-[#f2cd00] font-medium text-[13px]">{`${_.capitalize(userData && userData.user && userData.user?.first_name)} ${_.capitalize(userData && userData.user && userData.user?.last_name)}`}</span>
+                                    {/* <span className="text-[#00000080] font-normal text-[12px] mt-0">View Account</span> */}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div >
+                </div>
+            </div >
+
+            {show ? <ModalOverlay /> : <></>}
         </>
     );
 }

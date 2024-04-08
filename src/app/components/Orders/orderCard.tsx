@@ -174,7 +174,7 @@ export default function OrderCard({ label, orders }: any) {
                                                     {/* <span className="text-[12px]">Save</span> */}
 
                                                 </div>
-                                                <a href="/order-1.pdf" target="_blank" rel="noopener noreferrer" download>
+                                                <a href={order.ticket_pdf ? `${Urls.BASE_URL}${order.ticket_pdf}` : '/'} target="_blank" rel="noopener noreferrer" download>
                                                     <div className='flex flex-col items-start ml-2'>
 
                                                         <span className="text-[14px] text-gray-500">Invoice</span>
