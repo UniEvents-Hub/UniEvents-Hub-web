@@ -23,6 +23,11 @@ export const getFilteredEvents = async (event_type: any, success: any, error: an
    return GET(url, success, error);
  };
 
+ export const getEventImage = async (event_id: any, success: any, error: any) => {
+  let url = `${Urls.BASE_URL}${Urls.GET_IMAGE_EVENTS}${event_id}/`; 
+ return GET(url, success, error);
+};
+
  export const getFavouritesEvents = async (user_id: any, success: any, error: any) => {
   let url = `${Urls.BASE_URL}${Urls.GET_FAVS_EVENTS}?user_id=${user_id}`; 
  return GET(url, success, error);
@@ -37,6 +42,11 @@ export const doCreateEvent = async (params: any, success: any, error: any) => {
     let url = `${Urls.BASE_URL}${Urls.CREATE_EVENT}`; 
    return POST_EVENT(url, params, success, error);
  };
+
+ export const doUploadImages = async (params: any, success: any, error: any) => {
+  let url = `${Urls.BASE_URL}${Urls.UPLOAD_IMAGES}`; 
+ return POST_EVENT(url, params, success, error);
+};
 
  export const doUpdateEvent = async (event_id: any, params: any, success: any, error: any) => {
     let url = `${Urls.BASE_URL}${Urls.UPDATE_EVENT}${event_id}/`; 

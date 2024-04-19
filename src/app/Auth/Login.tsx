@@ -285,7 +285,7 @@ export default function Login(props: any) {
                                     <div className="mt-6">
                                         <div className="flex justify-between mb-2">
                                             <label htmlFor="password" className="block mb-2 text-md text-gray-600 dark:text-gray-900">Password</label>
-                                            <a href="#" className="text-sm text-gray-900 focus:text-blue-500 hover:text-blue-500 hover:underline">Forgot password?</a>
+                                            {/* <a href="#" className="text-sm text-gray-900 focus:text-blue-500 hover:text-blue-500 hover:underline">Forgot password?</a> */}
                                         </div>
                                         <div className="relative">
                                             <input

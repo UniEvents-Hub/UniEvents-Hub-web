@@ -37,7 +37,7 @@ const initialMenu: MenuItem[] = [
 
     { name: "Create Event", href: "/createEvent", icon: "/images/navbar/create_event.svg", selectedIcon: "/images/navbar/create_event_selected.svg" },
     { name: "My Events", href: "/organizations/events", icon: "/images/navbar/my_event.svg", selectedIcon: "/images/navbar/my_event_selected.svg" },
-    { name: "My Gallery", href: "/gallery", icon: "/images/navbar/gallery.svg", selectedIcon: "/images/navbar/gallery_selected.svg" },
+    { name: "My Event Gallery", href: "/gallery", icon: "/images/navbar/gallery.svg", selectedIcon: "/images/navbar/gallery_selected.svg" },
     { name: "Profile Settings", href: "/profile", icon: "/images/navbar/settings.svg", selectedIcon: "/images/navbar/settings_selected.svg" },
     { name: "Log Out", href: "/", icon: "/images/navbar/logout.svg", selectedIcon: "/images/navbar/logout_selected.svg" },
 ];

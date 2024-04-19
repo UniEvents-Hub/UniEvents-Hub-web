@@ -16,9 +16,12 @@ import PhoneInput from "react-phone-input-2";
 import 'react-phone-input-2/lib/style.css'
 import { useDispatch } from "react-redux";
 import * as _ from "lodash";
-import { doUpdateUser } from '@/app/services/User/user-service';
+import { doUpdateUser, getUserInfo } from '@/app/services/User/user-service';
 import { TokenConstants } from '../utils/constants';
 import MessageModal from '@/app/components/common/messageModal';
+import {
+    userDetails,
+} from "@/app/redux/features/app-slice";
 
 type FormType = {
     firstName: string;
@@ -101,6 +104,7 @@ export default function BasicInfo({ userInfo }: any) {
                     console.log('doUpdateUser success', success);
                     setShowMsgModal(true)
                     setMessageType('success')
+                    getUserData()
                     if (success) {
                     }
                 },
@@ -110,6 +114,25 @@ export default function BasicInfo({ userInfo }: any) {
             );
         }
     };
+
+    const getUserData = () => {
+        let user_id = localStorage.getItem(TokenConstants.USER_INFO);
+        if (user_id) {
+            getUserInfo(
+                user_id,
+                (success: any) => {
+                    console.log('getUserInfo success', success);
+
+                    if (success) {
+                        dispatch(userDetails(success.data));
+                    }
+                },
+                (error: any) => {
+                    console.log('login error', error);
+                },
+            );
+        }
+    }
 
     const updateUserEmail = async (user: User, newEmail: string) => {
 

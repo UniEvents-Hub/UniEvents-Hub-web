@@ -10,10 +10,13 @@ import HomeAddress from "./HomeAddress";
 import BillingAddress from "./BillingAddress";
 import { useAppSelector } from "@/app/redux/store";
 import * as _ from "lodash";
-import { doUpdateUser } from '@/app/services/User/user-service';
+import { doUpdateUser, getUserInfo } from '@/app/services/User/user-service';
 import { TokenConstants } from '../utils/constants';
 import MessageModal from '@/app/components/common/messageModal';
 import Urls from "@/app/Networking/urls";
+import {
+    userDetails,
+} from "@/app/redux/features/app-slice";
 
 function ProfilePage() {
     const router = useRouter();
@@ -80,6 +83,25 @@ function ProfilePage() {
         return file;
     }
 
+    const getUserData = () => {
+        let user_id = localStorage.getItem(TokenConstants.USER_INFO);
+        if (user_id) {
+            getUserInfo(
+                user_id,
+                (success: any) => {
+                    console.log('getUserInfo success', success);
+
+                    if (success) {
+                        dispatch(userDetails(success.data));
+                    }
+                },
+                (error: any) => {
+                    console.log('login error', error);
+                },
+            );
+        }
+    }
+
     const updateProfilePhoto = (pickedImage: any, pickedFileName: any) => {
         let params = {
             profile_photo: pickedImage ? base64ToFile(pickedImage, pickedFileName) : '',
@@ -94,6 +116,7 @@ function ProfilePage() {
                 console.log('updateProfilePhoto success', success);
                 setShowMsgModal(true)
                 setMessageType('success')
+                getUserData()
                 if (success) {
                 }
             },

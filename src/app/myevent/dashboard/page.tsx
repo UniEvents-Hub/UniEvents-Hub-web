@@ -11,12 +11,14 @@ import {
     LinkedinIcon,
 } from 'next-share';
 import { useRouter, useSearchParams } from "next/navigation";
-import { getEvents, getEventDetails, doUpdateEvent } from '@/app/services/Event/event-service';
+import { getEvents, getEventDetails, doUpdateEvent, doUploadImages, getEventImage } from '@/app/services/Event/event-service';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import { formattedAMPMTime } from '@/app/utils/utility-function';
 dayjs.extend(advancedFormat);
 import Loader from '@/app/components/Loader';
+import Urls from '@/app/Networking/urls';
+import MessageModal from '@/app/components/common/messageModal';
 
 function EventDashboardPage() {
     const router = useRouter();
@@ -29,12 +31,22 @@ function EventDashboardPage() {
     const [filterType, setFilterType] = useState('On Sale');
     const [loading, setLoading] = useState<boolean>(true);
     const [eventDetails, setEventDetails] = useState<any>(null);
-    const [shareLink, setShareLink] = useState<any>('')
+    const [shareLink, setShareLink] = useState<any>('');
+    const [showMsgModal, setShowMsgModal] = useState(false);
+    const [messageType, setMessageType] = useState('')
+    const [selectedImages, setSelectedImages] = useState<any>([]);
+    const [uploadedImages, setUploadedImages] = useState<any>([]);
 
     useEffect(() => {
         const evet_id = searchParams?.get("eventId");
         getEventInfo(evet_id)
     }, []);
+
+    useEffect(() => {
+        const evet_id = searchParams?.get("eventId");
+        getEventImages(evet_id)
+        setSelectedImages([])
+    }, [showMsgModal]);
 
     const getEventInfo = (id: any) => {
 
@@ -46,6 +58,7 @@ function EventDashboardPage() {
                 if (success && success.data.length > 0) {
                     setEventDetails(success.data[0]);
                     // setTicketCount(success.data[0].total_tickets); 
+                    getEventImages(success.data[0].id)
                     let link = `${window.location.origin}/eventDetails?eventId=${success.data[0].id}`
                     setShareLink(link)
                     if (success.data[0].event_status) {
@@ -54,6 +67,30 @@ function EventDashboardPage() {
                             handleDropDown(savedStaus)
                         }
                     }
+                }
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000)
+            },
+            (error: any) => {
+                console.log('login error', error);
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000)
+            },
+        );
+
+    }
+
+    const getEventImages = (id: any) => {
+
+        getEventImage(
+            id,
+            (success: any) => {
+                console.log('dashboard getEventImages success', success);
+
+                if (success && success.data.length > 0) {
+                    setUploadedImages(success.data)
                 }
                 setTimeout(() => {
                     setLoading(false);
@@ -148,6 +185,66 @@ function EventDashboardPage() {
 
     };
 
+    const handleRemoveImage = (indexToRemove: any) => {
+        setSelectedImages((prevImages: any) => {
+            return prevImages.filter((_, index) => index !== indexToRemove);
+        });
+    };
+
+    const handleImageSelect = (e: any) => {
+        const files = Array.from(e.target.files);
+        console.log('files', files)
+        setSelectedImages(files)
+        // Do something with the selected files, such as uploading them
+    };
+
+    const uploadImages = () => {
+        if (selectedImages && selectedImages.length > 0) {
+            setLoading(true);
+            for (let i = 0; i < selectedImages.length; i++) {
+                let params = {
+                    event: eventDetails?.id,
+                    image: selectedImages[i]
+                } as any;
+
+                uploadImageAPIHandle(params)
+            }
+            setTimeout(() => {
+                setLoading(false);
+            }, 500)
+            setSelectedImages([])
+            setShowMsgModal(true)
+            setMessageType('success')
+            getEventImages(eventDetails?.id)
+        }
+    }
+
+    const uploadImageAPIHandle = (params: any) => {
+        console.log('params', params)
+        doUploadImages(
+            params,
+            (success: any) => {
+                console.log('uploadImageAPIHandle success', success);
+
+                if (success && success.data) {
+
+                }
+
+            },
+            (error: any) => {
+                console.log('uploadImageAPIHandle error', error);
+                setLoading(false);
+                if (error && error.data) {
+                    let errmsg = Object.values(error.data)[0] as any;
+                    console.log(errmsg)
+                    if (errmsg && errmsg.length > 0) {
+                        alert(errmsg[0])
+                    }
+                }
+            },
+        );
+    }
+
     if (loading)
         return (
             <>
@@ -223,7 +320,7 @@ function EventDashboardPage() {
                         </div>
 
 
-                        <div className="md:w-[80%] flex justify-center items-start h-screen ml-auto mr-auto  overflow-x-scroll no-scrollbar  mt-10">
+                        <div className="md:w-[80%]  flex justify-center items-start h-screen ml-20 mr-auto  overflow-x-scroll no-scrollbar  mt-10">
 
                             <div>
                                 <h1 className="text-#1C1C1C text-[38px] text-bold text-left mb-6">Dashboard</h1>
@@ -324,11 +421,93 @@ function EventDashboardPage() {
                                     </div> */}
                                 </div>
 
+                                {
+                                    uploadedImages && uploadedImages.length > 0 ?
+                                        <div className="flex-col mt-10">
+                                            <h1 className="text-#1C1C1C text-[38px] text-bold text-left mb-2">Event Gallery</h1>
+                                            <div className="grid grid-cols-4 gap-4 mt-4 mb-10 ml-0">
+                                                {uploadedImages.map((item: any, index: any) => (
+                                                    <div key={index} className="relative">
+                                                        <img src={item?.image ? `${Urls.BASE_URL}${item?.image}` : ''} alt={`Image ${index}`} className="w-full h-[150px] rounded-[10px] object-cover" />
+
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div> : null
+
+                                }
+
+
+                                <div className="flex-col mt-6">
+                                    <h1 className="text-#1C1C1C text-[38px] text-bold text-left mb-2">{uploadedImages.length > 0 ? 'Add more photos' : 'Add photos'}</h1>
+
+                                    <div className="flex justify-between">
+
+                                        <div className="flex justify-start items-center">
+                                            <label htmlFor="imagePicker" className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md">
+                                                Select Images
+                                            </label>
+                                            <input
+                                                type="file"
+                                                id="imagePicker"
+                                                name="images"
+                                                accept="image/*"
+                                                multiple
+                                                className="hidden"
+                                                onChange={handleImageSelect}
+                                            />
+                                        </div>
+
+                                        {
+                                            selectedImages && selectedImages.length > 0 ?
+                                                <div className="flex justify-end items-center">
+                                                    <button
+                                                        onClick={() => uploadImages()} id="dropdownDefaultButton" data-dropdown-toggle="dropdown"
+                                                        className="w-[140px] h-[50px] bg-[#007a33] hover:bg-blue-600 text-[#f2cd00] text-center focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-[14px] font-bold px-4 py-4 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+                                                        Upload Images
+
+                                                    </button>
+
+                                                </div> : null
+                                        }
+
+                                    </div>
+
+
+
+
+                                    <div className="grid grid-cols-4 gap-4 mt-10 mb-10 ml-0">
+                                        {selectedImages.map((image: any, index: any) => (
+                                            <div key={index} className="relative">
+                                                <img src={URL.createObjectURL(image)} alt={`Image ${index}`} className="w-full h-[150px] rounded-[10px] object-cover" />
+                                                <button
+                                                    onClick={() => handleRemoveImage(index)}
+                                                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 focus:outline-none"
+                                                >
+                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M15.293 4.293a1 1 0 011.414 1.414L11.414 10l5.293 5.293a1 1 0 01-1.414 1.414L10 11.414l-5.293 5.293a1 1 0 01-1.414-1.414L8.586 10 3.293 4.707a1 1 0 111.414-1.414L10 8.586l5.293-5.293a1 1 0 011.414 0z"
+                                                            clipRule="evenodd"
+                                                        />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
                             </div>
                             {/*   */}
                             {/* <EventCard /> */}
                         </div>
-
+                        {
+                            showMsgModal ?
+                                <MessageModal
+                                    message={'Images uploaded successfully!'}
+                                    type={messageType}
+                                    closeModal={() => setShowMsgModal(false)} /> : null
+                        }
 
                     </div>
                     : null

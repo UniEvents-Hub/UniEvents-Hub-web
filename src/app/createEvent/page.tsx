@@ -470,8 +470,12 @@ function CreateEventPage(props: any) {
             params.longitude = selectedCoordinates ? selectedCoordinates[1] : 53.5213
             params.latitude = selectedCoordinates ? selectedCoordinates[0] : -113.521
         }
+        if (!isEmpty(description)) {
+            params.description = description
+        }
         if (totalTicket > 0) {
             params.total_tickets = totalTicket
+            params.total_tickets_remaining = totalTicket
         }
         if (ticketPrice !== 0) {
             params.ticket_price = ticketPrice
@@ -892,10 +896,10 @@ function CreateEventPage(props: any) {
                 {/* <BasicInfo />
             <HomeAddress />
             <BillingAddress /> */}
-                <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 flex justify-end items-end">
+                <div className="fixed bottom-0 left-0 w-full ml-[200px] bg-white border-t border-gray-200 p-4 flex justify-end items-end " style={{ zIndex: 1000 }}>
                     <button
                         onClick={isEdit && eventDetails ? handleUpdateEvent : handleCreateEvent}
-                        className="bg-[#007a33] hover:bg-blue-600 text-[#f2cd00] font-bold py-2 px-4 rounded">
+                        className="bg-[#007a33] hover:bg-blue-600 text-[#f2cd00] mr-[220px] font-bold py-2 px-4 rounded">
                         {isEdit ? 'Edit event' : 'Create event'}
                     </button>
                 </div>
